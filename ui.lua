@@ -4336,9 +4336,6 @@ function Library:Window(p)
 				task.defer(function()
 					LogFrame.CanvasPosition = Vector2.new(0, math.huge)
 				end)
-
-				-- print to real console too
-				print(string.format("[K2NTA][%s] %s %s", level:upper(), icon, text))
 			end
 
 			-- === Clear ===
