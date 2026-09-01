@@ -1180,7 +1180,7 @@ do
 		TextLabel_1.Size = UDim2.new(1, 0,0, 14)
 		TextLabel_1.Font = Enum.Font.GothamBold
 		TextLabel_1.RichText = true
-		TextLabel_1.Text = tostring(t or "")ostring(d)
+		TextLabel_1.Text = tostring(d or "")
 		TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 		TextLabel_1.TextSize = 10
 		TextLabel_1.TextTransparency = 0.699999988079071
@@ -1291,7 +1291,7 @@ do
 		end
 
 		function f:SetDesc(vs)
-			TextLabel_1.Text = tostring(t or "")ostring(vs)
+			TextLabel_1.Text = tostring(vs or "")
 			if vs and vs ~= "" then
 				TextLabel_1.Visible = true
 			else
@@ -1685,7 +1685,7 @@ do
 			TextLabel_1.BorderSizePixel = 0
 			TextLabel_1.Size = UDim2.new(1, 0,1, 0)
 			TextLabel_1.Font = Enum.Font.GothamBold
-			TextLabel_1.Text = tostring(t or "")ext
+			TextLabel_1.Text = tostring(text or "")
 			TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 			TextLabel_1.TextSize = 12
 			TextLabel_1.TextXAlignment = Enum.TextXAlignment.Left
@@ -2771,7 +2771,7 @@ function Library:Window(p)
 			Section_1.BorderSizePixel = 0
 			Section_1.Size = UDim2.new(1, 0,0, 20)
 			Section_1.Font = Enum.Font.GothamBold
-			Section_1.Text = tostring(t or "")ostring(Title or "")
+			Section_1.Text = tostring(Title or "")
 			Section_1.TextColor3 = Color3.fromRGB(255,255,255)
 			Section_1.TextSize = 12
 			Section_1.TextXAlignment = Enum.TextXAlignment.Left
@@ -3517,7 +3517,7 @@ function Library:Window(p)
 			TextLabel_1.BorderSizePixel = 0
 			TextLabel_1.Size = UDim2.new(1, 0,0, 25)
 			TextLabel_1.Font = Enum.Font.GothamBold
-			TextLabel_1.Text = tostring(t or "")ostring(Title)
+			TextLabel_1.Text = tostring(Title or "")
 			TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 			TextLabel_1.TextSize = 11
 
@@ -3843,7 +3843,7 @@ function Library:Window(p)
 			local New = {}
 
 			function New:SetTitle(t)
-				TextLabel_1.Text = tostring(t or "")ostring(t)
+				TextLabel_1.Text = tostring(t or "")
 			end
 
 			function New:SetCode(t)
@@ -4004,7 +4004,7 @@ function Library:Window(p)
 			TextLabel_1.Size = UDim2.new(1, 0,1, 0)
 			TextLabel_1.Font = Enum.Font.GothamBold
 			TextLabel_1.RichText = true
-			TextLabel_1.Text = tostring(t or "")ostring(Key):gsub("Enum.KeyCode.", "")
+			TextLabel_1.Text = tostring(Key or ""):gsub("Enum.KeyCode.", "")
 			TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 			TextLabel_1.TextSize = 10
 			TextLabel_1.TextTransparency = 0.30000001192092896
@@ -4065,7 +4065,7 @@ function Library:Window(p)
 				inputConnection = U.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.Keyboard then
 						Key = input.KeyCode
-						TextLabel_1.Text = tostring(t or "")ostring(Key):gsub("Enum.KeyCode.", "")
+						TextLabel_1.Text = tostring(Key or ""):gsub("Enum.KeyCode.", "")
 						adjustBoxBindSize()
 						-- เปลี่ยนแค่ key แสดง ไม่ trigger callback
 						KeyChangedCallback(Key)
@@ -4122,7 +4122,7 @@ function Library:Window(p)
 
 			function New:SetKey(t)
 				Key = t
-				TextLabel_1.Text = tostring(t or "")ostring(Key):gsub("Enum.KeyCode.", "")
+				TextLabel_1.Text = tostring(Key or ""):gsub("Enum.KeyCode.", "")
 				adjustBoxBindSize()
 				-- ไม่เรียก callback ตอน SetKey
 			end
@@ -5251,7 +5251,7 @@ function Library:Window(p)
 			TextLabel_1.PlaceholderColor3 = Color3.fromRGB(178,178,178)
 			TextLabel_1.PlaceholderText = Placeholder
 			TextLabel_1.RichText = true
-			TextLabel_1.Text = tostring(t or "")ostring(Value or "")
+			TextLabel_1.Text = tostring(Value or "")
 			TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 			TextLabel_1.TextSize = 10
 			TextLabel_1.TextTransparency = 0.30000001192092896
@@ -5666,7 +5666,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 		TextLabel_1.Size = UDim2.new(0, 200,0, 30)
 		TextLabel_1.Font = Enum.Font.GothamBold
 		TextLabel_1.RichText = true
-		TextLabel_1.Text = tostring(t or "")ostring(Title)
+		TextLabel_1.Text = tostring(Title or "")
 		TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 		TextLabel_1.TextSize = 20
 
