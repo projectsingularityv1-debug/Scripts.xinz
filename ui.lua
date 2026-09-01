@@ -1,7 +1,7 @@
--- ══════════════════════════════════════════════════════════════════
+-- ==================================================================
 --  Anti-Detection Bypass Layer (Dex-style)
 --  Randomized names, cloneref services, gethui/protectgui hiding
--- ══════════════════════════════════════════════════════════════════
+-- ==================================================================
 
 local _writefile = (typeof(writefile) == "function" and writefile) or nil
 local _isfile = (typeof(isfile) == "function" and isfile) or nil
@@ -12806,11 +12806,11 @@ function Library:Window(p)
 		Profile_Avatar.Image = GetAsset("10901594247") -- Default user icon
 		Profile_Avatar.ScaleType = Enum.ScaleType.Crop
 		
-		-- Avatar Loading: ลองดึงรูปด้วยวิธีต่างๆ ตามความสามารถของ executor
+		-- Avatar Loading:   executor
 		local avatarUrl = ProfileData.AvatarUrl
 		if avatarUrl and avatarUrl ~= "" then
 			task.spawn(function()
-				-- วิธีที่ 1: ถ้าเป็นลิงก์ Roblox thumbnail API ดึง userId และใช้ GetUserThumbnailAsync
+				-- 1:  Roblox thumbnail API  userId  GetUserThumbnailAsync
 				local uid = avatarUrl:match("userIds=(%d+)")
 				if uid then
 					local s, imgUrl = pcall(function()
@@ -12826,7 +12826,7 @@ function Library:Window(p)
 					end
 				end
 				
-				-- วิธีที่ 2: ใช้ CacheImage ที่ทำไว้ด้านบน (Dex-style)
+				-- 2:  CacheImage  (Dex-style)
 				if avatarUrl:match("^https?://") then
 					pcall(function()
 						Profile_Avatar.Image = CacheImage(avatarUrl)
@@ -14510,7 +14510,7 @@ function Library:Window(p)
 			ToggleValue_1.BorderColor3 = Color3.fromRGB(0,0,0)
 			ToggleValue_1.BorderSizePixel = 0
 			ToggleValue_1.LayoutOrder = 1
-			ToggleValue_1.Size = UDim2.new(0, 0, 0, 0)   -- ซ่อน: ไม่ใช้พื้นที่ใน layout
+			ToggleValue_1.Size = UDim2.new(0, 0, 0, 0)   -- :  layout
 			ToggleValue_1.Visible = false
 
 			UICorner_1.Parent = ToggleValue_1
@@ -14623,7 +14623,7 @@ function Library:Window(p)
 						Key = input.KeyCode
 						TextLabel_1.Text = tostring(Key):gsub("Enum.KeyCode.", "")
 						adjustBoxBindSize()
-						-- เปลี่ยนแค่ key แสดง ไม่ trigger callback
+						-- key   trigger callback
 						KeyChangedCallback(Key)
 						inputConnection:Disconnect()
 						task.wait(.1)
@@ -14640,7 +14640,7 @@ function Library:Window(p)
 				end
 			end)
 
-			-- ไม่เรียก Callback ตอน init เพื่อป้องกัน toggle เปิดทันที
+			-- Callback  init  toggle
 			-- delay(0, function()
 			-- 	pcall(Callback, Key, Value)
 			-- end)
@@ -14680,7 +14680,7 @@ function Library:Window(p)
 				Key = t
 				TextLabel_1.Text = tostring(Key):gsub("Enum.KeyCode.", "")
 				adjustBoxBindSize()
-				-- ไม่เรียก callback ตอน SetKey
+				-- callback  SetKey
 			end
 
 			return New
@@ -14735,7 +14735,7 @@ function Library:Window(p)
 			TopLabel.Size = UDim2.new(1, -60, 1, 0)
 			TopLabel.Position = UDim2.new(0, 8, 0, 0)
 			TopLabel.Font = Enum.Font.GothamBold
-			TopLabel.Text = "📋 " .. Title
+			TopLabel.Text = "[CLIPBOARD] " .. Title
 			TopLabel.TextColor3 = Color3.fromRGB(160, 160, 200)
 			TopLabel.TextSize = 10
 			TopLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -14801,11 +14801,11 @@ function Library:Window(p)
 				system  = Color3.fromRGB(180, 140, 255),
 			}
 			local levelIcons = {
-				info    = "ℹ",
-				success = "✓",
-				warn    = "⚠",
-				error   = "✗",
-				system  = "◈",
+				info    = "",
+				success = "",
+				warn    = "",
+				error   = "",
+				system  = "",
 			}
 
 			local logCount = 0
@@ -14823,7 +14823,7 @@ function Library:Window(p)
 				end
 
 				local timeStr = os.date and os.date("%H:%M:%S") or ""
-				local icon = levelIcons[level] or "·"
+				local icon = levelIcons[level] or ""
 				local color = levelColors[level] or Color3.fromRGB(200, 200, 200)
 
 				-- Card Container
@@ -14836,7 +14836,7 @@ function Library:Window(p)
 
 				RowFrame.Parent = LogFrame
 				RowFrame.BackgroundColor3 = Color3.fromRGB(26, 26, 34)
-				RowFrame.BackgroundTransparency = 1 -- เริ่มต้นที่ใสสำหรับ animation
+				RowFrame.BackgroundTransparency = 1 -- animation
 				RowFrame.BorderSizePixel = 0
 				RowFrame.Size = UDim2.new(1, 0, 0, 0)
 				RowFrame.AutomaticSize = Enum.AutomaticSize.Y
@@ -15884,7 +15884,7 @@ function Library:Window(p)
 			ImageLogo.ScaleType = Enum.ScaleType.Crop
 			
 			UICorner_1.Parent = ImageLogo
-			UICorner_1.CornerRadius = UDim.new(0, 8) -- ขอบมน 8
+			UICorner_1.CornerRadius = UDim.new(0, 8) -- 8
 
 			-- Overlay for crossfade
 			SecondImage.Name = "ImOverlay"
@@ -16352,7 +16352,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 	end
 
 	do
-		local ReopenBreadcrumb, ReopenBreadcrumbEnabled -- ให้ปุ่ม breadcrumb (CloseUIButton) ผูกสถานะเปิด/ปิดได้
+		local ReopenBreadcrumb, ReopenBreadcrumbEnabled -- breadcrumb (CloseUIButton) /
 		local Size_1 = Instance.new("TextButton")
 
 		Size_1.Name = "Size"
@@ -16727,7 +16727,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			CloseUIShadow.ImageTransparency = 0.5
 			CloseUIShadow.ScaleType = Enum.ScaleType.Slice
 			CloseUIShadow.SliceCenter = Rect.new(10, 10, 118, 118)
-			CloseUIShadow.Visible = false -- โชว์เฉพาะตอน UI ถูกซ่อน ควบคุมโดย closeui()
+			CloseUIShadow.Visible = false -- UI   closeui()
 			
 			local CloseUIScale = Instance.new("UIScale")
 			CloseUIScale.Parent = CloseUIShadow
@@ -17066,11 +17066,11 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			Icon = "house"
 		})
 
-		-- Image Carousel (คุณสามารถนำ ID รูปภาพมาเปลี่ยนตรงนี้ได้เลย)
+		-- Image Carousel ( ID )
 		local CarouselImages = {
-			GetAsset("92567372646337"), -- รูปที่ 1
-			GetAsset("92567372646337"), -- รูปที่ 2 
-			GetAsset("92567372646337"), -- รูปที่ 3
+			GetAsset("92567372646337"), -- 1
+			GetAsset("92567372646337"), -- 2
+			GetAsset("92567372646337"), -- 3
 		}
 		
 		local HomeCarousel = HomeTab:Image()
@@ -17078,13 +17078,13 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 		
 		task.spawn(function()
 			local idx = 1
-			while task.wait(5) do -- สลับรูปทุกๆ 5 วินาที
+			while task.wait(5) do -- 5
 				if not HomeCarousel then break end
 				idx = idx + 1
 				if idx > #CarouselImages then idx = 1 end
 				
 				local s = pcall(function()
-					HomeCarousel:SetImage(CarouselImages[idx], true) -- true = ให้มีเอฟเฟกต์ Fade (เลือน)
+					HomeCarousel:SetImage(CarouselImages[idx], true) -- true =  Fade ()
 				end)
 				if not s then break end
 			end
