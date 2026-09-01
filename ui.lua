@@ -907,11 +907,28 @@ do
 	-- High-Performance Lucide & FontAwesome Icon Engine (Compkiller 2.6)
 	local LucideEngine
 	local okLucide, resLucide = pcall(function()
+		-- 1. Try local file first (fastest, offline)
 		if _isfile and _isfile("lucide.lua") then
 			return loadstring(readfile("lucide.lua"))()
 		elseif _isfile and _isfile("icon.lua") then
 			return loadstring(readfile("icon.lua"))()
 		end
+
+		-- 2. Try loading directly from your GitHub Repository
+		local okHttp, resHttp = pcall(function()
+			return game:HttpGet("https://raw.githubusercontent.com/projectsingularityv1-debug/Scripts.xinz/refs/heads/main/lucide.lua")
+		end)
+		if okHttp and resHttp and #resHttp > 0 then
+			return loadstring(resHttp)()
+		end
+
+		local okHttp2, resHttp2 = pcall(function()
+			return game:HttpGet("https://raw.githubusercontent.com/projectsingularityv1-debug/Scripts.xinz/refs/heads/main/icon.lua")
+		end)
+		if okHttp2 and resHttp2 and #resHttp2 > 0 then
+			return loadstring(resHttp2)()
+		end
+
 		return nil
 	end)
 	if okLucide and type(resLucide) == "table" and resLucide.GetIcon then
