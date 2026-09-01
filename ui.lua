@@ -3,26 +3,6 @@
 --  Randomized names, cloneref services, gethui/protectgui hiding
 -- ══════════════════════════════════════════════════════════════════
 
-local success, Compkiller = pcall(function()
-	return loadstring(game:HttpGet("https://raw.githubusercontent.com/4lpaca-pin/CompKiller/refs/heads/main/src/source.luau"))()
-end)
-if success and type(Compkiller) == "table" and Compkiller.Security then
-	pcall(function() Compkiller:Security("XINZ-UI-Cache") end)
-end
-
--- Hook PreloadAsync to prevent Anti-Cheat from scanning UI assets
-pcall(function()
-	if hookfunction and clonefunction then
-		local ContentProvider = game:GetService("ContentProvider")
-		local oldPreload
-		oldPreload = hookfunction(ContentProvider.PreloadAsync, function(self, assets, callback)
-			-- If the assets contain our cache strings or UI elements, we fake the load
-			if not checkcaller() then return end
-			return oldPreload(self, assets, callback)
-		end)
-	end
-end)
-
 local _cloneref = (typeof(cloneref) == "function" and cloneref) or function(...) return ... end
 local _gethui = (typeof(gethui) == "function" and gethui) or (typeof(get_hidden_gui) == "function" and get_hidden_gui) or nil
 local _protectgui = (typeof(protect_gui) == "function" and protect_gui) or (typeof(syn) == "table" and syn and syn.protect_gui) or nil
