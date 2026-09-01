@@ -7,6 +7,16 @@
 local IconEngine = {}
 
 IconEngine.Lucide = {
+	['crosshair-stroke'] = "rbxassetid://10709818534",
+	['shield-01-stroke'] = "rbxassetid://10734951847",
+	['speedmeter-01-stroke'] = "rbxassetid://10723395708",
+	['info-circle-stroke'] = "rbxassetid://10723415903",
+	['football-stroke'] = "rbxassetid://71403045563776",
+	['shield-check-02-stroke'] = "rbxassetid://10734951367",
+	['play-stroke'] = "rbxassetid://10734923549",
+	['rocket-stroke'] = "rbxassetid://10734934585",
+	['basketball'] = "rbxassetid://71403045563776",
+
 	['lucide-zap'] = "rbxassetid://89858717966393",
 	['zap'] = "rbxassetid://89858717966393",
 	['close'] = "rbxassetid://10747384394",

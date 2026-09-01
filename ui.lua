@@ -1180,7 +1180,7 @@ do
 		TextLabel_1.Size = UDim2.new(1, 0,0, 14)
 		TextLabel_1.Font = Enum.Font.GothamBold
 		TextLabel_1.RichText = true
-		TextLabel_1.Text = tostring(d)
+		TextLabel_1.Text = tostring(t or "")ostring(d)
 		TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 		TextLabel_1.TextSize = 10
 		TextLabel_1.TextTransparency = 0.699999988079071
@@ -1291,7 +1291,7 @@ do
 		end
 
 		function f:SetDesc(vs)
-			TextLabel_1.Text = tostring(vs)
+			TextLabel_1.Text = tostring(t or "")ostring(vs)
 			if vs and vs ~= "" then
 				TextLabel_1.Visible = true
 			else
@@ -1685,7 +1685,7 @@ do
 			TextLabel_1.BorderSizePixel = 0
 			TextLabel_1.Size = UDim2.new(1, 0,1, 0)
 			TextLabel_1.Font = Enum.Font.GothamBold
-			TextLabel_1.Text = text
+			TextLabel_1.Text = tostring(t or "")ext
 			TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 			TextLabel_1.TextSize = 12
 			TextLabel_1.TextXAlignment = Enum.TextXAlignment.Left
@@ -1951,7 +1951,7 @@ function Library:Window(p)
 	VersionLbl.Position = UDim2.new(1, -5, 1, -5)
 	VersionLbl.Size = UDim2.new(0, 100, 0, 15)
 	VersionLbl.Font = Enum.Font.Gotham
-	VersionLbl.Text = Title .. " v" .. Version
+	VersionLbl.Text = tostring(Title or "") .. " v" .. tostring(Version or "1.0")
 	VersionLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
 	VersionLbl.TextSize = 12
 	VersionLbl.TextXAlignment = Enum.TextXAlignment.Right
@@ -2155,7 +2155,7 @@ function Library:Window(p)
 	Desc_1.LayoutOrder = 1
 	Desc_1.Size = UDim2.new(1, 0,0, 16)
 	Desc_1.Font = Enum.Font.GothamBold
-	Desc_1.Text = Desc
+	Desc_1.Text = tostring(Desc or "")
 	Desc_1.TextColor3 = Color3.fromRGB(255,255,255)
 	Desc_1.TextSize = 12
 	Desc_1.TextTransparency = 0.5
@@ -2180,7 +2180,7 @@ function Library:Window(p)
 	Title_2.BorderSizePixel = 0
 	Title_2.Size = UDim2.new(1, 0,0, 18)
 	Title_2.Font = Enum.Font.GothamBold
-	Title_2.Text = Title
+	Title_2.Text = tostring(Title or "")
 	Title_2.TextColor3 = Color3.fromRGB(255,255,255)
 	Title_2.TextSize = 18
 	Title_2.TextXAlignment = Enum.TextXAlignment.Left
@@ -2343,7 +2343,7 @@ function Library:Window(p)
 		Profile_Name.Position = UDim2.new(0, 48, 0, 8)
 		Profile_Name.Size = UDim2.new(1, -50, 0, 16)
 		Profile_Name.Font = Enum.Font.GothamBold
-		Profile_Name.Text = ProfileData.Username or "User"
+		Profile_Name.Text = tostring((ProfileData and ProfileData.Username) or "User")
 		Profile_Name.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Profile_Name.TextSize = 11
 		Profile_Name.TextXAlignment = Enum.TextXAlignment.Left
@@ -2356,7 +2356,7 @@ function Library:Window(p)
 		Profile_Email.Position = UDim2.new(0, 48, 0, 24)
 		Profile_Email.Size = UDim2.new(1, -50, 0, 12)
 		Profile_Email.Font = Enum.Font.Gotham
-		Profile_Email.Text = ProfileData.Email or "unknown@email.com"
+		Profile_Email.Text = tostring((ProfileData and ProfileData.Email) or "")
 		Profile_Email.TextColor3 = Color3.fromRGB(200, 200, 200)
 		Profile_Email.TextSize = 9
 		Profile_Email.TextXAlignment = Enum.TextXAlignment.Left
@@ -2771,7 +2771,7 @@ function Library:Window(p)
 			Section_1.BorderSizePixel = 0
 			Section_1.Size = UDim2.new(1, 0,0, 20)
 			Section_1.Font = Enum.Font.GothamBold
-			Section_1.Text = Title
+			Section_1.Text = tostring(t or "")ostring(Title or "")
 			Section_1.TextColor3 = Color3.fromRGB(255,255,255)
 			Section_1.TextSize = 12
 			Section_1.TextXAlignment = Enum.TextXAlignment.Left
@@ -2785,7 +2785,7 @@ function Library:Window(p)
 			local New = {}
 
 			function New:SetTitle(t)
-				Section_1.Text = t
+				Section_1.Text = tostring(t or "")
 			end
 
 			return New
@@ -3517,7 +3517,7 @@ function Library:Window(p)
 			TextLabel_1.BorderSizePixel = 0
 			TextLabel_1.Size = UDim2.new(1, 0,0, 25)
 			TextLabel_1.Font = Enum.Font.GothamBold
-			TextLabel_1.Text = tostring(Title)
+			TextLabel_1.Text = tostring(t or "")ostring(Title)
 			TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 			TextLabel_1.TextSize = 11
 
@@ -3843,7 +3843,7 @@ function Library:Window(p)
 			local New = {}
 
 			function New:SetTitle(t)
-				TextLabel_1.Text = tostring(t)
+				TextLabel_1.Text = tostring(t or "")ostring(t)
 			end
 
 			function New:SetCode(t)
@@ -4004,7 +4004,7 @@ function Library:Window(p)
 			TextLabel_1.Size = UDim2.new(1, 0,1, 0)
 			TextLabel_1.Font = Enum.Font.GothamBold
 			TextLabel_1.RichText = true
-			TextLabel_1.Text = tostring(Key):gsub("Enum.KeyCode.", "")
+			TextLabel_1.Text = tostring(t or "")ostring(Key):gsub("Enum.KeyCode.", "")
 			TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 			TextLabel_1.TextSize = 10
 			TextLabel_1.TextTransparency = 0.30000001192092896
@@ -4065,7 +4065,7 @@ function Library:Window(p)
 				inputConnection = U.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.Keyboard then
 						Key = input.KeyCode
-						TextLabel_1.Text = tostring(Key):gsub("Enum.KeyCode.", "")
+						TextLabel_1.Text = tostring(t or "")ostring(Key):gsub("Enum.KeyCode.", "")
 						adjustBoxBindSize()
 						-- เปลี่ยนแค่ key แสดง ไม่ trigger callback
 						KeyChangedCallback(Key)
@@ -4122,7 +4122,7 @@ function Library:Window(p)
 
 			function New:SetKey(t)
 				Key = t
-				TextLabel_1.Text = tostring(Key):gsub("Enum.KeyCode.", "")
+				TextLabel_1.Text = tostring(t or "")ostring(Key):gsub("Enum.KeyCode.", "")
 				adjustBoxBindSize()
 				-- ไม่เรียก callback ตอน SetKey
 			end
@@ -4552,7 +4552,7 @@ function Library:Window(p)
 			TitleColorPicker.BorderSizePixel = 0
 			TitleColorPicker.Size = UDim2.new(1, 0, 0, 27)
 			TitleColorPicker.Font = Enum.Font.GothamBold
-			TitleColorPicker.Text = Title
+			TitleColorPicker.Text = tostring(Title or "")
 			TitleColorPicker.TextColor3 = Color3.fromRGB(0, 0, 0)
 			TitleColorPicker.TextSize = 12.000
 			TitleColorPicker.TextXAlignment = Enum.TextXAlignment.Left
@@ -5251,7 +5251,7 @@ function Library:Window(p)
 			TextLabel_1.PlaceholderColor3 = Color3.fromRGB(178,178,178)
 			TextLabel_1.PlaceholderText = Placeholder
 			TextLabel_1.RichText = true
-			TextLabel_1.Text = Value
+			TextLabel_1.Text = tostring(t or "")ostring(Value or "")
 			TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 			TextLabel_1.TextSize = 10
 			TextLabel_1.TextTransparency = 0.30000001192092896
@@ -5295,7 +5295,7 @@ function Library:Window(p)
 			end
 
 			function New:SetValue(t)
-				TextLabel_1.Text = t
+				TextLabel_1.Text = tostring(t or "")
 			end
 
 			function New:SetClearTextOnFocus(t)
@@ -5666,7 +5666,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 		TextLabel_1.Size = UDim2.new(0, 200,0, 30)
 		TextLabel_1.Font = Enum.Font.GothamBold
 		TextLabel_1.RichText = true
-		TextLabel_1.Text = tostring(Title)
+		TextLabel_1.Text = tostring(t or "")ostring(Title)
 		TextLabel_1.TextColor3 = Color3.fromRGB(255,255,255)
 		TextLabel_1.TextSize = 20
 
@@ -5711,7 +5711,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 		TextLabel_2.BorderSizePixel = 0
 		TextLabel_2.Size = UDim2.new(1, 0,1, 0)
 		TextLabel_2.Font = Enum.Font.GothamBold
-		TextLabel_2.Text = TitleButton1
+		TextLabel_2.Text = tostring(TitleButton1 or "")
 		TextLabel_2.TextColor3 = Color1
 		TextLabel_2.TextSize = 16
 
@@ -5754,7 +5754,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 		TextLabel_3.BorderSizePixel = 0
 		TextLabel_3.Size = UDim2.new(1, 0,1, 0)
 		TextLabel_3.Font = Enum.Font.GothamBold
-		TextLabel_3.Text = TitleButton2
+		TextLabel_3.Text = tostring(TitleButton2 or "")
 		TextLabel_3.TextColor3 = Color2
 		TextLabel_3.TextSize = 16
 
