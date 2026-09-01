@@ -2586,56 +2586,7 @@ function Library:Window(p)
 
 		local Click = click(Tab_1)
 
-		local DockBtn = nil
-		if Tabs.ReopenBreadcrumb then
-			local Crumb = Tabs.ReopenBreadcrumb:FindFirstChild("BackgroundCloseUI")
-			if Crumb then Crumb = Crumb:FindFirstChild("Crumb") end
-			if Crumb then
-				DockBtn = Instance.new("ImageButton")
-				DockBtn.Name = "DockBtn_" .. Title
-				DockBtn.Parent = Crumb
-				DockBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				DockBtn.BackgroundTransparency = 1
-				DockBtn.Size = UDim2.new(0, 24, 0, 24)
-				DockBtn.LayoutOrder = p.LayoutOrder or (10 + #self.List)
-				ApplyImage(DockBtn, Icon)
-				DockBtn.ImageColor3 = themes[IsTheme]['Text & Icon']
-				DockBtn.ZIndex = 50
-				addToTheme('Text & Icon', DockBtn)
-				
-				DockBtn.MouseEnter:Connect(function()
-					TooltipLabel.Text = Title
-					local ts = _Services.TextService
-					local textBounds = ts:GetTextSize(Title, 12, Enum.Font.GothamMedium, Vector2.new(1000, 24))
-					TooltipFrame.Size = UDim2.new(0, textBounds.X + 16, 0, 24)
-					
-					local absPos = DockBtn.AbsolutePosition
-					local absSize = DockBtn.AbsoluteSize
-					if CrumbOrientation == "Bottom" then
-						TooltipFrame.Position = UDim2.new(0, absPos.X + absSize.X/2, 0, absPos.Y - 5)
-						TooltipFrame.AnchorPoint = Vector2.new(0.5, 1)
-					elseif CrumbOrientation == "Top" then
-						TooltipFrame.Position = UDim2.new(0, absPos.X + absSize.X/2, 0, absPos.Y + absSize.Y + 5)
-						TooltipFrame.AnchorPoint = Vector2.new(0.5, 0)
-					elseif CrumbOrientation == "Left" then
-						TooltipFrame.Position = UDim2.new(0, absPos.X + absSize.X + 5, 0, absPos.Y + absSize.Y/2)
-						TooltipFrame.AnchorPoint = Vector2.new(0, 0.5)
-					elseif CrumbOrientation == "Right" then
-						TooltipFrame.Position = UDim2.new(0, absPos.X - 5, 0, absPos.Y + absSize.Y/2)
-						TooltipFrame.AnchorPoint = Vector2.new(1, 0.5)
-					end
-					
-					TooltipFrame.Visible = true
-					tw({v = TooltipFrame, t = 0.2, s = Enum.EasingStyle.Exponential, d = "Out", g = {BackgroundTransparency = 0}}):Play()
-					tw({v = TooltipLabel, t = 0.2, s = Enum.EasingStyle.Exponential, d = "Out", g = {TextTransparency = 0}}):Play()
-				end)
-				
-				DockBtn.MouseLeave:Connect(function()
-					tw({v = TooltipFrame, t = 0.2, s = Enum.EasingStyle.Exponential, d = "Out", g = {BackgroundTransparency = 1}}):Play()
-					tw({v = TooltipLabel, t = 0.2, s = Enum.EasingStyle.Exponential, d = "Out", g = {TextTransparency = 1}}):Play()
-				end)
-			end
-		end
+
 
 		table.insert(self.List, {
 			Page = InPage_1,
@@ -6187,56 +6138,45 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			})
 		end)
 
-		do
-			local CloseUI = p.CloseUIButton
+				do
+			local CloseUI = p.CloseUIButton or {}
 			local CloseUIEnabled = CloseUI.Enabled
 			if CloseUIEnabled == nil then CloseUIEnabled = true end
 
-			local currentClosedStyle = "Breadcrumb"
 			local CloseUIShadow = Instance.new("ImageLabel")
-			local UIPaddingCloseUI_1 = Instance.new("UIPadding")
 			local BackgroundCloseUI_1 = Instance.new("Frame")
 			local UICornerCloseUI_1 = Instance.new("UICorner")
-			local Crumb_1 = Instance.new("Frame")
-			local UIListLayoutCrumb_1 = Instance.new("UIListLayout")
-			local UIPaddingCrumb_1 = Instance.new("UIPadding")
-			local HomeBadge_1 = Instance.new("Frame")
-			local UICornerHome_1 = Instance.new("UICorner")
+			local UIStrokeCloseUI_1 = Instance.new("UIStroke")
 			local HomeIcon_1 = Instance.new("ImageLabel")
-			local Chevron_1 = Instance.new("ImageLabel")
-			local Title_1 = Instance.new("TextLabel")
+			local HomeClick = Instance.new("TextButton")
 
 			CloseUIShadow.Name = "CloseUIShadow"
 			CloseUIShadow.Parent = ScreenGui
-			CloseUIShadow.BackgroundColor3 = Color3.fromRGB(163,162,165)
+			CloseUIShadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 			CloseUIShadow.BackgroundTransparency = 1
-			CloseUIShadow.AnchorPoint = Vector2.new(0.5, 1)
-			CloseUIShadow.Position = UDim2.new(0.5, 0, 0.98, 0)
-			CloseUIShadow.Size = UDim2.new(0, 120, 0, 48)
+			CloseUIShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+			CloseUIShadow.Position = UDim2.new(0.5, 0, 0.93, 0)
+			CloseUIShadow.Size = UDim2.new(0, 48, 0, 48)
 			CloseUIShadow.Image = CacheImage("rbxassetid://1316045217")
 			CloseUIShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
 			CloseUIShadow.ImageTransparency = 0.5
 			CloseUIShadow.ScaleType = Enum.ScaleType.Slice
 			CloseUIShadow.SliceCenter = Rect.new(10, 10, 118, 118)
-			CloseUIShadow.Visible = false -- โชว์เฉพาะตอน UI ถูกซ่อน ควบคุมโดย closeui()
-			
+			CloseUIShadow.Visible = false
+
 			local CloseUIScale = Instance.new("UIScale")
 			CloseUIScale.Parent = CloseUIShadow
 			CloseUIScale.Scale = 1
 
 			addToTheme('Shadow', CloseUIShadow)
 
-			UIPaddingCloseUI_1.Parent = CloseUIShadow
-			UIPaddingCloseUI_1.PaddingBottom = UDim.new(0,5)
-			UIPaddingCloseUI_1.PaddingLeft = UDim.new(0,5)
-			UIPaddingCloseUI_1.PaddingRight = UDim.new(0,5)
-			UIPaddingCloseUI_1.PaddingTop = UDim.new(0,5)
-
 			BackgroundCloseUI_1.Name = "BackgroundCloseUI"
 			BackgroundCloseUI_1.Parent = CloseUIShadow
+			BackgroundCloseUI_1.AnchorPoint = Vector2.new(0.5, 0.5)
+			BackgroundCloseUI_1.Position = UDim2.new(0.5, 0, 0.5, 0)
 			BackgroundCloseUI_1.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
 			BackgroundCloseUI_1.BorderSizePixel = 0
-			BackgroundCloseUI_1.Size = UDim2.new(1, 0, 1, 0)
+			BackgroundCloseUI_1.Size = UDim2.new(1, -6, 1, -6)
 			BackgroundCloseUI_1.ClipsDescendants = true
 
 			addToTheme('Background', BackgroundCloseUI_1)
@@ -6244,310 +6184,71 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			UICornerCloseUI_1.Parent = BackgroundCloseUI_1
 			UICornerCloseUI_1.CornerRadius = UDim.new(1, 0)
 
-			Crumb_1.Name = "Crumb"
-			Crumb_1.Parent = BackgroundCloseUI_1
-			Crumb_1.BackgroundTransparency = 1
-			Crumb_1.Size = UDim2.new(1, 0, 1, 0)
+			UIStrokeCloseUI_1.Parent = BackgroundCloseUI_1
+			UIStrokeCloseUI_1.Color = Color3.fromRGB(255, 255, 255)
+			UIStrokeCloseUI_1.Transparency = 0.88
+			UIStrokeCloseUI_1.Thickness = 1.2
+			addToTheme('Function.Dropdown.Value Stroke', UIStrokeCloseUI_1)
 
-			UIListLayoutCrumb_1.Parent = Crumb_1
-			UIListLayoutCrumb_1.FillDirection = Enum.FillDirection.Horizontal
-			UIListLayoutCrumb_1.Padding = UDim.new(0, 6)
-			UIListLayoutCrumb_1.SortOrder = Enum.SortOrder.LayoutOrder
-			UIListLayoutCrumb_1.HorizontalAlignment = Enum.HorizontalAlignment.Center
-			UIListLayoutCrumb_1.VerticalAlignment = Enum.VerticalAlignment.Center
-
-			UIPaddingCrumb_1.Parent = Crumb_1
-			UIPaddingCrumb_1.PaddingLeft = UDim.new(0, 3)
-			UIPaddingCrumb_1.PaddingRight = UDim.new(0, 3)
-			UIPaddingCrumb_1.PaddingTop = UDim.new(0, 3)
-			UIPaddingCrumb_1.PaddingBottom = UDim.new(0, 3)
-
-			HomeBadge_1.Name = "HomeBadge"
-			HomeBadge_1.Parent = Crumb_1
-			HomeBadge_1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			HomeBadge_1.BackgroundTransparency = 0.95
-			HomeBadge_1.Size = UDim2.new(0, 32, 0, 32)
-			HomeBadge_1.LayoutOrder = 1
-			
-			local UIStroke_Home = Instance.new("UIStroke")
-			UIStroke_Home.Parent = HomeBadge_1
-			UIStroke_Home.Color = Color3.fromRGB(255, 255, 255)
-			UIStroke_Home.Transparency = 0.9
-
-			UICornerHome_1.Parent = HomeBadge_1
-			UICornerHome_1.CornerRadius = UDim.new(1, 0)
-
-			HomeIcon_1.Parent = HomeBadge_1
+			HomeIcon_1.Name = "HomeIcon"
+			HomeIcon_1.Parent = BackgroundCloseUI_1
 			HomeIcon_1.AnchorPoint = Vector2.new(0.5, 0.5)
 			HomeIcon_1.BackgroundTransparency = 1
 			HomeIcon_1.Position = UDim2.new(0.5, 0, 0.5, 0)
 			HomeIcon_1.Size = UDim2.new(0, 26, 0, 26)
 			ApplyImage(HomeIcon_1, Icon)
-			HomeIcon_1.ImageColor3 = Color3.fromRGB(255,255,255)
+			HomeIcon_1.ImageColor3 = Color3.fromRGB(255, 255, 255)
 
-			Chevron_1.Visible = false
-
-
-
-			if CloseUI.Icon then
-				local IconImg = Instance.new("ImageLabel")
-				IconImg.Name = "Icon"
-				IconImg.Parent = Crumb_1
-				IconImg.BackgroundTransparency = 1
-				IconImg.Size = UDim2.new(0, 20, 0, 20)
-				IconImg.LayoutOrder = 4
-				ApplyImage(IconImg, CloseUI.Icon)
-				addToTheme('Text & Icon', IconImg)
-			end
-
-
-			local HomeClick = Instance.new("TextButton")
 			HomeClick.Name = "HomeClick"
-			HomeClick.Parent = HomeBadge_1
+			HomeClick.Parent = BackgroundCloseUI_1
 			HomeClick.Size = UDim2.new(1, 0, 1, 0)
 			HomeClick.BackgroundTransparency = 1
 			HomeClick.Text = ""
 			HomeClick.ZIndex = 10
-			
-			local isBreadcrumbMini = false
-			local updateCrumbSize
-			
-			local function toggleMini(force)
-				if force ~= nil then
-					isBreadcrumbMini = force
-				else
-					isBreadcrumbMini = not isBreadcrumbMini
-				end
-				
-				if currentClosedStyle == "Breadcrumb" then
-					for _, child in ipairs(Crumb_1:GetChildren()) do
-						if child.Name:match("^DockBtn_") then
-							child.Visible = not isBreadcrumbMini
-						end
-					end
-				else
-					for _, child in ipairs(Crumb_1:GetChildren()) do
-						if child.Name:match("^DockBtn_") then
-							child.Visible = true
-						end
-					end
-				end
-				if updateCrumbSize then updateCrumbSize() end
-			end
 
-			local animGeneration = 0
-			updateCrumbSize = function()
-				task.defer(function()
-					local dockBtns = {}
-					for _, child in ipairs(Crumb_1:GetChildren()) do
-						if child.Name:match("^DockBtn_") then
-							table.insert(dockBtns, child)
-						end
-					end
-					
-					animGeneration = animGeneration + 1
-					local currentGen = animGeneration
-					
-					local easingStyle = currentClosedStyle == "Gooey plus menu" and Enum.EasingStyle.Back or Enum.EasingStyle.Exponential
-					local duration = currentClosedStyle == "Gooey plus menu" and 0.4 or 0.2
-					
-					if currentClosedStyle == "Gooey plus menu" then
-						UIListLayoutCrumb_1.Parent = nil
-						BackgroundCloseUI_1.ClipsDescendants = false
-						HomeBadge_1.AnchorPoint = Vector2.new(0.5, 0.5)
-						HomeBadge_1.Position = UDim2.new(0.5, 0, 0.5, 0)
-						BackgroundCloseUI_1.AnchorPoint = Vector2.new(0.5, 0.5)
-						BackgroundCloseUI_1.Position = UDim2.new(0.5, 0, 0.5, 0)
-						UIPaddingCrumb_1.PaddingLeft = UDim.new(0, 0)
-						UIPaddingCrumb_1.PaddingRight = UDim.new(0, 0)
-						UIPaddingCrumb_1.PaddingTop = UDim.new(0, 0)
-						UIPaddingCrumb_1.PaddingBottom = UDim.new(0, 0)
-						
-						local count = #dockBtns
-						local radius = 80
-						local anglePerItem = 40 -- Degrees between each item
-						local totalSpread = (count - 1) * anglePerItem
-						local maxSpread = 180
-						
-						if totalSpread > maxSpread then
-							totalSpread = maxSpread
-							if count > 1 then
-								anglePerItem = maxSpread / (count - 1)
-							end
-						end
-						
-						local baseAngle = 0
-						if CrumbOrientation == "Bottom" then baseAngle = 270
-						elseif CrumbOrientation == "Top" then baseAngle = 90
-						elseif CrumbOrientation == "Left" then baseAngle = 0
-						elseif CrumbOrientation == "Right" then baseAngle = 180
-						end
-						
-						local actualStartAngle
-						local angleStep
-						if CrumbOrientation == "Bottom" or CrumbOrientation == "Left" then
-							actualStartAngle = baseAngle - (totalSpread / 2)
-							angleStep = anglePerItem
-						else
-							actualStartAngle = baseAngle + (totalSpread / 2)
-							angleStep = -anglePerItem
-						end
-						
-						if count > 0 then
-							for i, btn in ipairs(dockBtns) do
-								btn.AnchorPoint = Vector2.new(0.5, 0.5)
-								
-								local bg = btn.Parent:FindFirstChild("IconBg_" .. btn.Name)
-								if not bg then
-									bg = Instance.new("Frame")
-									bg.Name = "IconBg_" .. btn.Name
-									bg.AnchorPoint = Vector2.new(0.5, 0.5)
-									bg.Position = UDim2.new(0.5, 0, 0.5, 0)
-									bg.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
-									bg.ZIndex = btn.ZIndex - 1
-									local corner = Instance.new("UICorner")
-									corner.CornerRadius = UDim.new(1, 0)
-									corner.Parent = bg
-									bg.Parent = btn.Parent
-									if addToTheme then addToTheme('Background', bg) end
-								end
-								
-								if btn.Image == "" or btn.Image == CacheImage("rbxassetid://0") then
-									bg.Visible = false
-								else
-									bg.Visible = true
-								end
-								
-								local delayTime = not isBreadcrumbMini and ((i - 1) * 0.025) or ((count - i) * 0.015)
-								
-								task.delay(delayTime, function()
-									if currentGen ~= animGeneration then return end
-									
-									if not isBreadcrumbMini then
-										local angleDeg = actualStartAngle + (i - 1) * angleStep
-										local angle = math.rad(angleDeg)
-										local offsetX = math.cos(angle) * radius
-										local offsetY = math.sin(angle) * radius
-										
-										tw({v = btn, t = 0.5, s = Enum.EasingStyle.Back, d = "Out", g = {Position = UDim2.new(0.5, offsetX, 0.5, offsetY), Size = UDim2.new(0, 22, 0, 22), ImageTransparency = 0}}):Play()
-										tw({v = bg, t = 0.5, s = Enum.EasingStyle.Back, d = "Out", g = {Position = UDim2.new(0.5, offsetX, 0.5, offsetY), Size = UDim2.new(0, 38, 0, 38), BackgroundTransparency = 0}}):Play()
-									else
-										tw({v = btn, t = 0.3, s = Enum.EasingStyle.Quad, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0, 0, 0, 0), ImageTransparency = 1}}):Play()
-										tw({v = bg, t = 0.3, s = Enum.EasingStyle.Quad, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1}}):Play()
-									end
-								end)
-							end
-						end
-						
-						if not isBreadcrumbMini then
-							tw({v = CloseUIShadow, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 200, 0, 200)}}):Play()
-							tw({v = HomeIcon_1, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 32, 0, 32)}}):Play()
-							tw({v = HomeBadge_1, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 38, 0, 38)}}):Play()
-						else
-							tw({v = CloseUIShadow, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 48, 0, 48)}}):Play()
-							tw({v = HomeIcon_1, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 26, 0, 26)}}):Play()
-							tw({v = HomeBadge_1, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 32, 0, 32)}}):Play()
-						end
-						tw({v = BackgroundCloseUI_1, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 44, 0, 44)}}):Play()
-					else
-						UIListLayoutCrumb_1.Parent = Crumb_1
-						BackgroundCloseUI_1.ClipsDescendants = true
-						HomeBadge_1.AnchorPoint = Vector2.new(0, 0)
-						HomeBadge_1.Position = UDim2.new(0, 0, 0, 0)
-						BackgroundCloseUI_1.AnchorPoint = Vector2.new(0, 0)
-						BackgroundCloseUI_1.Position = UDim2.new(0, 0, 0, 0)
-						tw({v = BackgroundCloseUI_1, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(1, 0, 1, 0)}}):Play()
-						tw({v = HomeIcon_1, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 26, 0, 26)}}):Play()
-						tw({v = HomeBadge_1, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 32, 0, 32)}}):Play()
-						
-						for _, btn in ipairs(dockBtns) do
-							btn.AnchorPoint = Vector2.new(0, 0)
-							btn.Size = UDim2.new(0, 24, 0, 24)
-							btn.ImageTransparency = 0
-							local bg = btn.Parent:FindFirstChild("IconBg_" .. btn.Name)
-							if bg then bg.Visible = false end
-						end
+			-- Click to toggle / reopen UI
+			HomeClick.MouseButton1Click:Connect(function()
+				tw({v = CloseUIScale, t = 0.08, s = Enum.EasingStyle.Quad, d = "Out", g = {Scale = 0.85}}):Play()
+				task.wait(0.08)
+				tw({v = CloseUIScale, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Scale = 1}}):Play()
+				if Tabs.closeui then
+					Tabs.closeui()
+				end
+			end)
 
-						if CrumbOrientation == "Bottom" or CrumbOrientation == "Top" then
-							UIPaddingCrumb_1.PaddingRight = UDim.new(0, isBreadcrumbMini and 3 or 14)
-							UIPaddingCrumb_1.PaddingBottom = UDim.new(0, 3)
-							UIPaddingCrumb_1.PaddingTop = UDim.new(0, 3)
-							UIPaddingCrumb_1.PaddingLeft = UDim.new(0, 3)
-							local targetW = (UIListLayoutCrumb_1.AbsoluteContentSize.X / CloseUIScale.Scale) + (isBreadcrumbMini and 16 or 27)
-							local w = math.max(48, targetW)
-							tw({v = CloseUIShadow, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, w, 0, 48)}}):Play()
-						else
-							UIPaddingCrumb_1.PaddingRight = UDim.new(0, 3)
-							UIPaddingCrumb_1.PaddingBottom = UDim.new(0, isBreadcrumbMini and 3 or 14)
-							UIPaddingCrumb_1.PaddingTop = UDim.new(0, 3)
-							UIPaddingCrumb_1.PaddingLeft = UDim.new(0, 3)
-							local targetH = (UIListLayoutCrumb_1.AbsoluteContentSize.Y / CloseUIScale.Scale) + (isBreadcrumbMini and 16 or 27)
-							local h = math.max(48, targetH)
-							tw({v = CloseUIShadow, t = duration, s = easingStyle, d = "Out", g = {Size = UDim2.new(0, 48, 0, h)}}):Play()
-						end
-					end
-				end)
-			end
-			UIListLayoutCrumb_1:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCrumbSize)
-			delay(0.1, function() toggleMini(true) end)
-			
+			-- Smooth hover scaling
+			CloseUIShadow.MouseEnter:Connect(function()
+				tw({v = CloseUIScale, t = 0.15, s = Enum.EasingStyle.Quad, d = "Out", g = {Scale = 1.1}}):Play()
+			end)
+
+			CloseUIShadow.MouseLeave:Connect(function()
+				tw({v = CloseUIScale, t = 0.15, s = Enum.EasingStyle.Quad, d = "Out", g = {Scale = 1}}):Play()
+			end)
+
+			-- Draggable floating logo
+			lak(BackgroundCloseUI_1, CloseUIShadow)
+
 			Tabs.SetCrumbOrientation = function(pos)
 				CrumbOrientation = pos
 				if pos == "Bottom" then
 					CloseUIShadow.AnchorPoint = Vector2.new(0.5, 1)
-					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.98, 0)}}):Play()
-					UIListLayoutCrumb_1.FillDirection = Enum.FillDirection.Horizontal
+					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.95, 0)}}):Play()
 				elseif pos == "Top" then
 					CloseUIShadow.AnchorPoint = Vector2.new(0.5, 0)
-					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.5, 0, 0, 2)}}):Play()
-					UIListLayoutCrumb_1.FillDirection = Enum.FillDirection.Horizontal
+					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.05, 0)}}):Play()
 				elseif pos == "Left" then
 					CloseUIShadow.AnchorPoint = Vector2.new(0, 0.5)
-					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.02, 0, 0.5, 0)}}):Play()
-					UIListLayoutCrumb_1.FillDirection = Enum.FillDirection.Vertical
+					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.03, 0, 0.5, 0)}}):Play()
 				elseif pos == "Right" then
 					CloseUIShadow.AnchorPoint = Vector2.new(1, 0.5)
-					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.98, 0, 0.5, 0)}}):Play()
-					UIListLayoutCrumb_1.FillDirection = Enum.FillDirection.Vertical
+					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.97, 0, 0.5, 0)}}):Play()
 				end
-				updateCrumbSize()
 			end
-
-			HomeClick.MouseButton1Click:Connect(function()
-				if currentClosedStyle == "Breadcrumb" then
-					toggleMini()
-				else
-					if Tabs.closeui then Tabs.closeui() end
-				end
-			end)
-			
-			CloseUIShadow.MouseEnter:Connect(function()
-				if currentClosedStyle == "Gooey plus menu" then
-					toggleMini(false) -- Expand
-				end
-			end)
-			
-			CloseUIShadow.MouseLeave:Connect(function()
-				if currentClosedStyle == "Gooey plus menu" then
-					toggleMini(true) -- Collapse
-				end
-			end)
 
 			ReopenBreadcrumb = CloseUIShadow
 			ReopenBreadcrumbEnabled = CloseUIEnabled
 			Tabs.ReopenBreadcrumb = CloseUIShadow
-
-			Tabs.SetClosedUIStyle = function(style)
-				currentClosedStyle = style
-				if style == "Gooey plus menu" then
-					CloseUIShadow.ImageTransparency = 1
-					toggleMini(true)
-				else
-					CloseUIShadow.ImageTransparency = 0.5
-				end
-			end
 		end
-	end
 
 		-- Auto-generate Home Tab
 		local HomeTab = Tabs:Tab({
@@ -6638,20 +6339,8 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			end
 		})
 		SettingsTab:Dropdown({
-			Title = "Closed UI Style",
-			Desc = "Select the style of the minimized UI",
-			List = {"Breadcrumb", "Gooey plus menu"},
-			Value = "Breadcrumb",
-			Callback = function(style)
-				if Tabs.SetClosedUIStyle then
-					Tabs.SetClosedUIStyle(style)
-				end
-			end
-		})
-
-		SettingsTab:Dropdown({
-			Title = "Breadcrumb Position",
-			Desc = "Change where the closed UI tab is placed",
+			Title = "Floating Logo Position",
+			Desc = "Set default position for the closed floating logo",
 			List = {"Bottom", "Top", "Left", "Right"},
 			Value = "Bottom",
 			Callback = function(pos)
@@ -6661,11 +6350,11 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			end
 		})
 
-		local breadcrumbSliderObj = SettingsTab:Slider({
-			Title = "Breadcrumb Size",
-			Desc = "Adjust the scale of the minimized UI tab",
-			Min = 100,
-			Max = 200,
+		local logoSliderObj = SettingsTab:Slider({
+			Title = "Floating Logo Scale",
+			Desc = "Adjust size of the minimized floating logo",
+			Min = 80,
+			Max = 180,
 			Default = 100,
 			Callback = function(val)
 				local closeShadow = ScreenGui:FindFirstChild("CloseUIShadow")
@@ -6675,14 +6364,14 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			end
 		})	
 		SettingsTab:Button({
-			Title = "Reset UI",
-			Desc = "Reset UI position and scale",
+			Title = "Reset UI Position",
+			Desc = "Reset Window and Floating Logo positions",
 			Callback = function()
 				if Tabs.SetCrumbOrientation then
-					Tabs.SetCrumbOrientation("Top")
+					Tabs.SetCrumbOrientation("Bottom")
 				end
-				if breadcrumbSliderObj then
-					breadcrumbSliderObj:SetValue(100)
+				if logoSliderObj then
+					logoSliderObj:SetValue(100)
 				end
 				Shadow_1.AnchorPoint = Vector2.new(0.5, 0.5)
 				Shadow_1.Position = UDim2.new(0.5, 0, 0.5, 0)
