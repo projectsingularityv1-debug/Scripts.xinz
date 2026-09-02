@@ -775,8 +775,6 @@ themes['LiquidGlass'] = themes['Liquid Glass']
 themes['Glass'] = themes['Liquid Glass']
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = _randomGuiName
-ScreenGui.DisplayOrder = 9999
-ScreenGui.ResetOnSpawn = false
 local runService = _Services.RunService
 local isStudio = runService:IsStudio()
 if not isStudio then
@@ -5571,7 +5569,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			Callback = function()
 				if Tabs.SetCrumbOrientation then
 					Tabs.SetCrumbOrientation("Bottom")
-				end 
+				end
 				if logoSliderObj then
 					logoSliderObj:SetValue(100)
 				end
@@ -5579,7 +5577,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 				Shadow_1.Position = UDim2.new(0.5, 0, 0.5, 0)
 			end
 		})
-		return Tabs
+			return Tabs
 	end
 end
 
