@@ -11799,495 +11799,962 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 
 
 		local isopen = false
+
 		local firsttime = false
+
 		local oSize
+
 		local uiTweening = false
 
 		local function closeui()
+
 			if uiTweening then return end
+
 			uiTweening = true
-			task.delay(0.25, function() uiTweening = false end)
+
+			task.delay(0.4, function() uiTweening = false end)
+
 			
+
 			isopen = not isopen
+
 			if isopen then
-				-- MINIMIZE: Hide window, Show floating logo
+
 				oSize = Background_1.Size
+
 				local close = tw({
+
 					v = Background_1,
+
 					t = 0.15,
-					s = Enum.EasingStyle.Quart,
-					d = "Out",
+
+					s = Enum.EasingStyle.Linear,
+
+					d = "InOut",
+
 					g = {
+
 						GroupTransparency = 1,
-						Size = oSize - UDim2.fromOffset(8, 8)
+
+						Size = oSize - UDim2.fromOffset(5, 5)
+
 					}
+
 				})
+
 				close:Play()
-				task.delay(0.15, function()
-					if isopen then
-						Shadow_1.Visible = false
-					end
-				end)
+
+				close.Completed:Wait()
+
+				Shadow_1.Visible = false
+
 				
-				-- Hide any open dropdowns
+
+				-- Hide any open dropdowns when the main UI closes
+
 				if ScreenGui then
+
 					for _, child in ipairs(ScreenGui:GetChildren()) do
+
 						if child.Name == "XinzDropdown" and child.Visible then
+
 							child.Visible = false
+
 						end
+
 					end
+
 				end
 
-				if ReopenBreadcrumb and ReopenBreadcrumbEnabled then
-					ReopenBreadcrumb.Visible = true
-					if Tabs.CloseUIScale then
-						Tabs.CloseUIScale.Scale = 0.5
-						tw({
-							v = Tabs.CloseUIScale,
-							t = 0.22,
-							s = Enum.EasingStyle.Back,
-							d = "Out",
-							g = {Scale = 1}
-						}):Play()
-					end
-				end
 			else
-				-- REOPEN: Show window, Hide floating logo
+
 				Shadow_1.Visible = true  
-				Background_1.Visible = true
-				Background_1.GroupTransparency = 0
+
 				local open = tw({
+
 					v = Background_1,
-					t = 0.18,
-					s = Enum.EasingStyle.Back,
-					d = "Out",
+
+					t = 0.15,
+
+					s = Enum.EasingStyle.Linear,
+
+					d = "InOut",
+
 					g = {
+
 						GroupTransparency = 0,
-						Size = oSize or Background_1.Size
+
+						Size = oSize
+
 					}
+
 				})
+
 				open:Play()
 
-				if ReopenBreadcrumb then
-					if Tabs.CloseUIScale then
-						local shrink = tw({
-							v = Tabs.CloseUIScale,
-							t = 0.12,
-							s = Enum.EasingStyle.Quad,
-							d = "In",
-							g = {Scale = 0.4}
-						})
-						shrink:Play()
-						task.delay(0.12, function()
-							if not isopen then
-								ReopenBreadcrumb.Visible = false
-								Tabs.CloseUIScale.Scale = 1
-							end
-						end)
-					else
-						ReopenBreadcrumb.Visible = false
-					end
-				end
 			end
 
-			if not firsttime then
-				firsttime = true
-				Tabs:Notify({
-					Title = Title .. " v" .. Version,
-					Desc = 'Press <font color="#FF77A5" size="14">('..tostring(Keybind):gsub("Enum.KeyCode.", "")..')</font> or click floating logo to toggle UI',
-					Time = 6
-				})
+
+
+			if ReopenBreadcrumb then
+
+				if isopen and ReopenBreadcrumbEnabled then
+
+					ReopenBreadcrumb.Visible = true
+
+					local targetPos = ReopenBreadcrumb.Position
+
+					local startPos
+
+					if CrumbOrientation == "Bottom" then
+
+						startPos = UDim2.new(targetPos.X.Scale, targetPos.X.Offset, targetPos.Y.Scale, targetPos.Y.Offset + 50)
+
+					elseif CrumbOrientation == "Top" then
+
+						startPos = UDim2.new(targetPos.X.Scale, targetPos.X.Offset, targetPos.Y.Scale, targetPos.Y.Offset - 50)
+
+					elseif CrumbOrientation == "Left" then
+
+						startPos = UDim2.new(targetPos.X.Scale, targetPos.X.Offset - 50, targetPos.Y.Scale, targetPos.Y.Offset)
+
+					elseif CrumbOrientation == "Right" then
+
+						startPos = UDim2.new(targetPos.X.Scale, targetPos.X.Offset + 50, targetPos.Y.Scale, targetPos.Y.Offset)
+
+					else
+
+						startPos = UDim2.new(targetPos.X.Scale, targetPos.X.Offset, targetPos.Y.Scale, targetPos.Y.Offset + 50)
+
+					end
+
+					ReopenBreadcrumb.Position = startPos
+
+					tw({
+
+						v = ReopenBreadcrumb,
+
+						t = 0.4,
+
+						s = Enum.EasingStyle.Exponential,
+
+						d = "Out",
+
+						g = {Position = targetPos}
+
+					}):Play()
+
+				else
+
+					local origPos = ReopenBreadcrumb.Position
+
+					local outPos
+
+					if CrumbOrientation == "Bottom" then
+
+						outPos = UDim2.new(origPos.X.Scale, origPos.X.Offset, origPos.Y.Scale, origPos.Y.Offset + 50)
+
+					elseif CrumbOrientation == "Top" then
+
+						outPos = UDim2.new(origPos.X.Scale, origPos.X.Offset, origPos.Y.Scale, origPos.Y.Offset - 50)
+
+					elseif CrumbOrientation == "Left" then
+
+						outPos = UDim2.new(origPos.X.Scale, origPos.X.Offset - 50, origPos.Y.Scale, origPos.Y.Offset)
+
+					elseif CrumbOrientation == "Right" then
+
+						outPos = UDim2.new(origPos.X.Scale, origPos.X.Offset + 50, origPos.Y.Scale, origPos.Y.Offset)
+
+					else
+
+						outPos = UDim2.new(origPos.X.Scale, origPos.X.Offset, origPos.Y.Scale, origPos.Y.Offset + 50)
+
+					end
+
+					
+
+					local outTween = tw({
+
+						v = ReopenBreadcrumb,
+
+						t = 0.3,
+
+						s = Enum.EasingStyle.Exponential,
+
+						d = "In",
+
+						g = {Position = outPos}
+
+					})
+
+					outTween:Play()
+
+					task.delay(0.3, function()
+
+						if not isopen then
+
+							ReopenBreadcrumb.Visible = false
+
+							ReopenBreadcrumb.Position = origPos
+
+						end
+
+					end)
+
+				end
+
 			end
+
+
+
+			if not firsttime then
+
+				firsttime = true
+
+				Tabs:Notify({
+
+					Title = Title .. " v" .. Version,
+
+					Desc = 'Press the <font color="#FF77A5" size="14">('..tostring(Keybind):gsub("Enum.KeyCode.", "")..')</font> button to hide and show the UI',
+
+					Time = 10
+
+				})
+
+			end
+
 		end
+
 		Tabs.closeui = closeui
+
+
 
 		ChSize_1.MouseButton1Click:Connect(closeui)
 
+
+
 		U.InputBegan:Connect(function(i)
+
 			if i.KeyCode == Keybind then
+
 				local focusedTextBox = U:GetFocusedTextBox()
+
 				if not focusedTextBox then
+
 					closeui()
+
 				end
+
 			end
+
 		end)
+
+
 
 		local CallTheme = function(v)
+
 			IsTheme = v
+
 			local t = themes[v]
+
 			Library:setTheme({
+
 				['Shadow'] = t.Shadow,
+
 				['Background'] = t.Background,
+
 				['Page'] = t.Page,
+
 				['Main'] = t.Main,
+
 				['Text'] = t.Text,
+
 				['Icon'] = t.Icon,
+
 				['Text & Icon'] = t['Text & Icon'],
+
 				['Function'] = {
+
 					['Toggle'] = {
+
 						['Background'] = t.Function.Toggle.Background,
+
 						['True'] = {
+
 							['Toggle Background'] = t.Function.Toggle.True['Toggle Background'],
+
 							['Toggle Value'] = t.Function.Toggle.True['Toggle Value'],
+
 						},
+
 						['False'] = {
+
 							['Toggle Background'] = t.Function.Toggle.False['Toggle Background'],
+
 							['Toggle Value'] = t.Function.Toggle.False['Toggle Value'],
+
 						}
+
 					},
+
+					['Label'] = {
+
+						['Background'] = t.Function.Label.Background,
+
+					},
+
 					['Dropdown'] = {
+
 						['Background'] = t.Function.Dropdown.Background,
+
 						['Value Background'] = t.Function.Dropdown['Value Background'],
+
 						['Value Stroke'] = t.Function.Dropdown['Value Stroke'],
+
 						['Dropdown Select'] = {
+
 							['Background'] = t.Function.Dropdown['Dropdown Select'].Background,
+
 							['Search'] = t.Function.Dropdown['Dropdown Select'].Search,
-							['Item Background'] = t.Function.Dropdown['Dropdown Select']['Item Background']
+
+							['Item Background'] = t.Function.Dropdown['Dropdown Select']['Item Background'],
+
 						}
+
 					},
+
 					['Slider'] = {
-						['Slider'] = t.Function.Slider.Slider,
-						['Progress'] = t.Function.Slider.Progress
+
+						['Background'] = t.Function.Slider.Background,
+
+						['Value Background'] = t.Function.Slider['Value Background'],
+
+						['Value Stroke'] = t.Function.Slider['Value Stroke'],
+
+						['Slider Bar'] = t.Function.Slider['Slider Bar'],
+
+						['Slider Bar Value'] = t.Function.Slider['Slider Bar Value'],
+
+						['Circle Value'] = t.Function.Slider['Circle Value'],
+
 					},
-					['Input'] = {
-						['Input Box'] = t.Function.Input['Input Box'],
-						['Input Box Stroke'] = t.Function.Input['Input Box Stroke']
+
+					['Code'] = {
+
+						['Background'] = t.Function.Code.Background,
+
+						['Background Code'] = t.Function.Code['Background Code'],
+
+						['Background Code Value'] = t.Function.Code['Background Code Value'],
+
+						['ScrollingFrame Code'] = t.Function.Code['ScrollingFrame Code'],
+
 					},
-					['Keybind'] = {
-						['Keybind Box'] = t.Function.Keybind['Keybind Box'],
-						['Keybind Box Stroke'] = t.Function.Keybind['Keybind Box Stroke']
-					},
+
 					['Button'] = {
-						['Button'] = t.Function.Button.Button,
-						['Button Stroke'] = t.Function.Button.Button
+
+						['Background'] = t.Function.Button.Background,
+
+						['Click'] = t.Function.Button.Click,
+
 					},
-					['Color Picker'] = {
-						['Background'] = t.Function['Color Picker'].Background,
-						['Color Select'] = {
-							['Background'] = t.Function['Color Picker']['Color Select'].Background,
-							['UIStroke'] = t.Function['Color Picker']['Color Select'].UIStroke
+
+					['Textbox'] = {
+
+						['Background'] = t.Function.Textbox.Background,
+
+						['Value Background'] = t.Function.Textbox['Value Background'],
+
+						['Value Stroke'] = t.Function.Textbox['Value Stroke'],
+
+					},
+
+					['Keybind'] = {
+
+						['Background'] = t.Function.Keybind.Background,
+
+						['Value Background'] = t.Function.Keybind['Value Background'],
+
+						['Value Stroke'] = t.Function.Keybind['Value Stroke'],
+
+						['True'] = {
+
+							['Toggle Background'] = t.Function.Keybind.True['Toggle Background'],
+
+							['Toggle Value'] = t.Function.Keybind.True['Toggle Value'],
+
+						},
+
+						['False'] = {
+
+							['Toggle Background'] = t.Function.Keybind.False['Toggle Background'],
+
+							['Toggle Value'] = t.Function.Keybind.False['Toggle Value'],
+
 						}
+
+					},
+
+					['Color Picker'] = {
+
+						['Background'] = t.Function['Color Picker'].Background,
+
+						['Color Select'] = {
+
+							['Background'] = t.Function['Color Picker']['Color Select'].Background,
+
+							['UIStroke'] = t.Function['Color Picker']['Color Select'].UIStroke,
+
+						}
+
 					}
+
 				}
+
 			})
+
+			if Tabs.ActiveTabTitle then
+
+				Tabs.ActiveTabTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+			end
+
+			if Tabs.ActiveTabIcon then
+
+				Tabs.ActiveTabIcon.ImageColor3 = t.Main
+
+			end
+
+			if Tabs.ActiveDockBtn then
+
+				Tabs.ActiveDockBtn.ImageColor3 = t.Main
+
+			end
+
 		end
 
-		ChTheme_1.MouseButton1Click:Connect(function()
-			CallTheme(IsTheme == 'Dark' and 'White' or 'Dark')
-		end)
+		local ThemeDrop = addDropdownSelect(DropdownValue_1, DropdownValue_1, false, CallTheme, Theme, themes.index)
 
-		Out_1.MouseButton1Click:Connect(function()
+
+
+		Close_1.MouseButton1Click:Connect(function()
+
 			Tabs:Dialog({
-				Title = 'Alert',
-				Desc = 'Do you want to close this script?',
+
+				Title = "Do you want to <font color='#FF0000'>close</font> the ui?",
+
 				Button1 = {
+
 					Title = 'Confirm',
-					Color = Color3.fromRGB(226, 39, 6),
+
+					Color = Color3.fromRGB(0, 188, 0),
+
 					Callback = function()
+
 						ScreenGui:Destroy()
-					end
+
+					end,
+
 				},
+
 				Button2 = {
+
 					Title = 'Cancel',
+
 					Color = Color3.fromRGB(226, 39, 6),
+
 				}
+
 			})
+
 		end)
 
-		do
+
+
+				do
+
 			local CloseUI = p.CloseUIButton or {}
+
 			local CloseUIEnabled = CloseUI.Enabled
+
 			if CloseUIEnabled == nil then CloseUIEnabled = true end
 
+
+
 			local CloseUIShadow = Instance.new("ImageLabel")
+
 			local BackgroundCloseUI_1 = Instance.new("Frame")
+
 			local UICornerCloseUI_1 = Instance.new("UICorner")
+
 			local UIStrokeCloseUI_1 = Instance.new("UIStroke")
+
 			local HomeIcon_1 = Instance.new("ImageLabel")
+
 			local HomeClick = Instance.new("TextButton")
 
+
+
 			CloseUIShadow.Name = "CloseUIShadow"
+
 			CloseUIShadow.Parent = ScreenGui
+
 			CloseUIShadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+
 			CloseUIShadow.BackgroundTransparency = 1
-			CloseUIShadow.AnchorPoint = Vector2.new(0, 0.5)
-			CloseUIShadow.Position = UDim2.new(0.04, 0, 0.35, 0)
-			CloseUIShadow.Size = UDim2.new(0, 50, 0, 50)
+
+			CloseUIShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+
+			CloseUIShadow.Position = UDim2.new(0.5, 0, 0.93, 0)
+
+			CloseUIShadow.Size = UDim2.new(0, 48, 0, 48)
+
 			CloseUIShadow.Image = CacheImage("rbxassetid://1316045217")
+
 			CloseUIShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-			CloseUIShadow.ImageTransparency = 0.4
+
+			CloseUIShadow.ImageTransparency = 0.5
+
 			CloseUIShadow.ScaleType = Enum.ScaleType.Slice
+
 			CloseUIShadow.SliceCenter = Rect.new(10, 10, 118, 118)
+
 			CloseUIShadow.Visible = false
-			CloseUIShadow.ZIndex = 9999
+
+
 
 			local CloseUIScale = Instance.new("UIScale")
+
 			CloseUIScale.Parent = CloseUIShadow
+
 			CloseUIScale.Scale = 1
+
+
 
 			addToTheme('Shadow', CloseUIShadow)
 
+
+
 			BackgroundCloseUI_1.Name = "BackgroundCloseUI"
+
 			BackgroundCloseUI_1.Parent = CloseUIShadow
+
 			BackgroundCloseUI_1.AnchorPoint = Vector2.new(0.5, 0.5)
+
 			BackgroundCloseUI_1.Position = UDim2.new(0.5, 0, 0.5, 0)
-			BackgroundCloseUI_1.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+
+			BackgroundCloseUI_1.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
+
 			BackgroundCloseUI_1.BorderSizePixel = 0
+
 			BackgroundCloseUI_1.Size = UDim2.new(1, -6, 1, -6)
+
 			BackgroundCloseUI_1.ClipsDescendants = true
-			BackgroundCloseUI_1.ZIndex = 10000
+
+
 
 			addToTheme('Background', BackgroundCloseUI_1)
 
+
+
 			UICornerCloseUI_1.Parent = BackgroundCloseUI_1
+
 			UICornerCloseUI_1.CornerRadius = UDim.new(1, 0)
 
+
+
 			UIStrokeCloseUI_1.Parent = BackgroundCloseUI_1
+
 			UIStrokeCloseUI_1.Color = Color3.fromRGB(255, 255, 255)
-			UIStrokeCloseUI_1.Transparency = 0.85
+
+			UIStrokeCloseUI_1.Transparency = 0.88
+
 			UIStrokeCloseUI_1.Thickness = 1.2
+
 			addToTheme('Function.Dropdown.Value Stroke', UIStrokeCloseUI_1)
 
+
+
 			HomeIcon_1.Name = "HomeIcon"
+
 			HomeIcon_1.Parent = BackgroundCloseUI_1
+
 			HomeIcon_1.AnchorPoint = Vector2.new(0.5, 0.5)
+
 			HomeIcon_1.BackgroundTransparency = 1
+
 			HomeIcon_1.Position = UDim2.new(0.5, 0, 0.5, 0)
+
 			HomeIcon_1.Size = UDim2.new(0, 26, 0, 26)
-			HomeIcon_1.ZIndex = 10001
+
 			ApplyImage(HomeIcon_1, Icon)
+
 			HomeIcon_1.ImageColor3 = Color3.fromRGB(255, 255, 255)
 
+
+
 			HomeClick.Name = "HomeClick"
+
 			HomeClick.Parent = BackgroundCloseUI_1
+
 			HomeClick.Size = UDim2.new(1, 0, 1, 0)
+
 			HomeClick.BackgroundTransparency = 1
+
 			HomeClick.Text = ""
-			HomeClick.ZIndex = 10002
-			HomeClick.Active = true
 
-			-- Responsive Drag & Tap Handler
-			local isDragging = false
-			local dragStartPos = nil
-			local startGuiPos = nil
-			local dragThreshold = 8
+			HomeClick.ZIndex = 10
 
-			HomeClick.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					isDragging = false
-					dragStartPos = input.Position
-					startGuiPos = CloseUIShadow.Position
-					
-					tw({v = CloseUIScale, t = 0.08, s = Enum.EasingStyle.Quad, d = "Out", g = {Scale = 0.92}}):Play()
 
-					input.Changed:Connect(function()
-						if input.UserInputState == Enum.UserInputState.End then
-							dragStartPos = nil
-							tw({v = CloseUIScale, t = 0.12, s = Enum.EasingStyle.Back, d = "Out", g = {Scale = 1}}):Play()
-						end
-					end)
-				end
-			end)
 
-			HomeClick.InputChanged:Connect(function(input)
-				if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragStartPos and startGuiPos then
-					local delta = input.Position - dragStartPos
-					if delta.Magnitude > dragThreshold then
-						isDragging = true
-						tw({
-							v = CloseUIShadow,
-							t = 0.03,
-							s = Enum.EasingStyle.Linear,
-							d = "InOut",
-							g = {
-								Position = UDim2.new(
-									startGuiPos.X.Scale,
-									startGuiPos.X.Offset + delta.X,
-									startGuiPos.Y.Scale,
-									startGuiPos.Y.Offset + delta.Y
-								)
-							}
-						}):Play()
-					end
-				end
-			end)
+			-- Click to toggle / reopen UI
 
 			HomeClick.MouseButton1Click:Connect(function()
-				if isDragging then
-					isDragging = false
-					return
-				end
-				-- Instant click feedback & toggle UI
+
+				tw({v = CloseUIScale, t = 0.08, s = Enum.EasingStyle.Quad, d = "Out", g = {Scale = 0.85}}):Play()
+
+				task.wait(0.08)
+
+				tw({v = CloseUIScale, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Scale = 1}}):Play()
+
 				if Tabs.closeui then
+
 					Tabs.closeui()
+
 				end
+
 			end)
+
+
 
 			-- Smooth hover scaling
-			HomeClick.MouseEnter:Connect(function()
-				if not dragStartPos then
-					tw({v = CloseUIScale, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Scale = 1.08}}):Play()
-				end
+
+			CloseUIShadow.MouseEnter:Connect(function()
+
+				tw({v = CloseUIScale, t = 0.15, s = Enum.EasingStyle.Quad, d = "Out", g = {Scale = 1.1}}):Play()
+
 			end)
 
-			HomeClick.MouseLeave:Connect(function()
-				if not dragStartPos then
-					tw({v = CloseUIScale, t = 0.15, s = Enum.EasingStyle.Quad, d = "Out", g = {Scale = 1}}):Play()
-				end
+
+
+			CloseUIShadow.MouseLeave:Connect(function()
+
+				tw({v = CloseUIScale, t = 0.15, s = Enum.EasingStyle.Quad, d = "Out", g = {Scale = 1}}):Play()
+
 			end)
+
+
+
+			-- Draggable floating logo
+
+			lak(BackgroundCloseUI_1, CloseUIShadow)
+
+
 
 			Tabs.SetCrumbOrientation = function(pos)
+
 				CrumbOrientation = pos
+
 				if pos == "Bottom" then
+
 					CloseUIShadow.AnchorPoint = Vector2.new(0.5, 1)
-					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.88, 0)}}):Play()
+
+					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.95, 0)}}):Play()
+
 				elseif pos == "Top" then
+
 					CloseUIShadow.AnchorPoint = Vector2.new(0.5, 0)
-					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.12, 0)}}):Play()
+
+					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.5, 0, 0.05, 0)}}):Play()
+
 				elseif pos == "Left" then
+
 					CloseUIShadow.AnchorPoint = Vector2.new(0, 0.5)
-					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.04, 0, 0.35, 0)}}):Play()
+
+					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.03, 0, 0.5, 0)}}):Play()
+
 				elseif pos == "Right" then
+
 					CloseUIShadow.AnchorPoint = Vector2.new(1, 0.5)
-					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.96, 0, 0.35, 0)}}):Play()
+
+					tw({v = CloseUIShadow, t = 0.3, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.97, 0, 0.5, 0)}}):Play()
+
 				end
+
 			end
+
+
 
 			ReopenBreadcrumb = CloseUIShadow
+
 			ReopenBreadcrumbEnabled = CloseUIEnabled
+
 			Tabs.ReopenBreadcrumb = CloseUIShadow
-			Tabs.CloseUIScale = CloseUIScale
+
 		end
 
+
+
 		-- Auto-generate Home Tab
+
 		local HomeTab = Tabs:Tab({
+
 			Title = "Home",
+
 			Icon = "house"
+
 		})
 
-		-- Image Carousel
+
+
+		-- Image Carousel (คุณสามารถนำ ID รูปภาพมาเปลี่ยนตรงนี้ได้เลย)
+
 		local CarouselImages = {
-			CacheImage("rbxassetid://92567372646337"),
-			CacheImage("rbxassetid://92567372646337"),
-			CacheImage("rbxassetid://92567372646337"),
+
+			CacheImage("rbxassetid://92567372646337"), -- รูปที่ 1
+
+			CacheImage("rbxassetid://92567372646337"), -- รูปที่ 2 
+
+			CacheImage("rbxassetid://92567372646337"), -- รูปที่ 3
+
 		}
+
 		
+
 		local HomeCarousel = HomeTab:Image()
+
 		HomeCarousel:SetImage(CarouselImages[1])
+
 		
+
 		task.spawn(function()
+
 			local idx = 1
-			while task.wait(5) do
+
+			while task.wait(5) do -- สลับรูปทุกๆ 5 วินาที
+
 				if not HomeCarousel then break end
+
 				idx = idx + 1
+
 				if idx > #CarouselImages then idx = 1 end
+
 				
+
 				local s = pcall(function()
-					HomeCarousel:SetImage(CarouselImages[idx], true)
+
+					HomeCarousel:SetImage(CarouselImages[idx], true) -- true = ให้มีเอฟเฟกต์ Fade (เลือน)
+
 				end)
+
 				if not s then break end
+
 			end
+
 		end)
+
+
 
 		local plr = _Services.Players.LocalPlayer
+
 		HomeTab:Label({
+
 			Title = "Welcome, " .. (plr and plr.DisplayName or "User") .. "!",
+
 			Desc = "Thanks for using " .. tostring(Title) .. (Version and (" v" .. tostring(Version)) or "")
+
 		})
+
+
 
 		HomeTab:Section({
+
 			Title = "System Information"
+
 		})
 
+
+
 		HomeTab:Label({
+
 			Title = "User",
+
 			Desc = plr and plr.Name or "Unknown"
+
 		})
 
+
+
 		HomeTab:Label({
+
 			Title = "Executor",
+
 			Desc = (identifyexecutor and identifyexecutor()) or "Unknown"
+
 		})
+
+
 
 		-- Time updater
+
 		local TimeLabel = HomeTab:Label({
+
 			Title = "Current Time",
+
 			Desc = os.date("%X")
+
 		})
+
 		task.spawn(function()
+
 			while task.wait(1) do
+
 				if not TimeLabel then break end
+
 				local s, e = pcall(function()
+
 					TimeLabel:SetDesc(os.date("%X"))
+
 				end)
+
 				if not s then break end
+
 			end
+
 		end)
 
+
+
 		-- Resize Handle
+
 		local ResizeHandle = Instance.new("ImageButton")
+
 		ResizeHandle.Name = "ResizeHandle"
+
 		ResizeHandle.Parent = Background_1
+
 		ResizeHandle.AnchorPoint = Vector2.new(1, 1)
+
 		ResizeHandle.Position = UDim2.new(1, -2, 1, -2)
+
 		ResizeHandle.Size = UDim2.new(0, 15, 0, 15)
+
 		ResizeHandle.BackgroundTransparency = 1
-		ResizeHandle.Image = CacheImage("rbxassetid://10901594247")
+
+		ResizeHandle.Image = CacheImage("rbxassetid://10901594247") -- using generic user icon as a placeholder handle, can be invisible
+
 		ResizeHandle.ImageTransparency = 0.8
+
 		ResizeHandle.ZIndex = 100
+
 		
+
 		make_resize(ResizeHandle, Shadow_1)
 
+
+
 		local SettingsTab = Tabs:Tab({ Title = "UI Settings", Icon = "settings", LayoutOrder = 9999 })
+
 		SettingsTab:Keybind({
+
 			Title = "Toggle UI Keybind",
+
 			Desc = "Change the key used to hide/show the UI",
+
 			Key = Keybind,
+
 			KeyChangedCallback = function(key)
+
 				Keybind = key
+
 			end
-		})
-		SettingsTab:Dropdown({
-			Title = "Floating Logo Position",
-			Desc = "Set default screen position for the floating logo",
-			List = {"Left", "Right", "Top", "Bottom"},
-			Value = "Left",
-			Callback = function(pos)
-				if Tabs.SetCrumbOrientation then
-					Tabs.SetCrumbOrientation(pos)
-				end
-			end
+
 		})
 
-		local logoSliderObj = SettingsTab:Slider({
-			Title = "Floating Logo Scale",
-			Desc = "Adjust size of the minimized floating logo",
-			Min = 70,
-			Max = 180,
-			Default = 100,
-			Callback = function(val)
-				if Tabs.CloseUIScale then
-					tw({v = Tabs.CloseUIScale, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Scale = val / 100}}):Play()
-				end
-			end
-		})	
-		SettingsTab:Button({
-			Title = "Reset UI Position",
-			Desc = "Reset Window and Floating Logo positions",
-			Callback = function()
+		SettingsTab:Dropdown({
+
+			Title = "Floating Logo Position",
+
+			Desc = "Set default position for the closed floating logo",
+
+			List = {"Bottom", "Top", "Left", "Right"},
+
+			Value = "Bottom",
+
+			Callback = function(pos)
+
 				if Tabs.SetCrumbOrientation then
-					Tabs.SetCrumbOrientation("Left")
+
+					Tabs.SetCrumbOrientation(pos)
+
 				end
-				if logoSliderObj then
-					logoSliderObj:SetValue(100)
-				end
-				Shadow_1.AnchorPoint = Vector2.new(0.5, 0.5)
-				Shadow_1.Position = UDim2.new(0.5, 0, 0.5, 0)
+
 			end
+
 		})
+
+
+
+		local logoSliderObj = SettingsTab:Slider({
+
+			Title = "Floating Logo Scale",
+
+			Desc = "Adjust size of the minimized floating logo",
+
+			Min = 80,
+
+			Max = 180,
+
+			Default = 100,
+
+			Callback = function(val)
+
+				local closeShadow = ScreenGui:FindFirstChild("CloseUIShadow")
+
+				if closeShadow and closeShadow:FindFirstChild("UIScale") then
+
+					tw({v = closeShadow.UIScale, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Scale = val / 100}}):Play()
+
+				end
+
+			end
+
+		})	
+
+		SettingsTab:Button({
+
+			Title = "Reset UI Position",
+
+			Desc = "Reset Window and Floating Logo positions",
+
+			Callback = function()
+
+				if Tabs.SetCrumbOrientation then
+
+					Tabs.SetCrumbOrientation("Bottom")
+
+				end 
+
+				if logoSliderObj then
+
+					logoSliderObj:SetValue(100)
+
+				end
+
+				Shadow_1.AnchorPoint = Vector2.new(0.5, 0.5)
+
+				Shadow_1.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+			end
+
+		})
+
+
 
 		return Tabs
 	end
 end
 
 return Library
+
