@@ -6366,7 +6366,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			Callback = function()
 				if Tabs.SetCrumbOrientation then
 					Tabs.SetCrumbOrientation("Bottom")
-				end
+				end 
 				if logoSliderObj then
 					logoSliderObj:SetValue(100)
 				end
@@ -6376,7 +6376,6 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 		})
 
 		return Tabs
-	end
 end
 
 return Library
