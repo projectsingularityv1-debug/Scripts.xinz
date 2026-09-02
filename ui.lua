@@ -6374,7 +6374,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 				Shadow_1.Position = UDim2.new(0.5, 0, 0.5, 0)
 			end
 		})
-
+		end
 		return Tabs
 end
 
