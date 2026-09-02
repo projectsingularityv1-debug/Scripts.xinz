@@ -1,8 +1,3 @@
--- ══════════════════════════════════════════════════════════════════
---  Anti-Detection Bypass Layer (Dex-style)
---  Randomized names, cloneref services, gethui/protectgui hiding
--- ══════════════════════════════════════════════════════════════════
-
 local success, Compkiller = pcall(function()
 	return loadstring(game:HttpGet("https://raw.githubusercontent.com/4lpaca-pin/CompKiller/refs/heads/main/src/source.luau"))()
 end)
@@ -41,54 +36,67 @@ end)()
 
 -- Safe environment functions for Image Caching (Dex Style)
 local _writefile = (typeof(writefile) == "function" and writefile) or nil
+local _readfile = (typeof(readfile) == "function" and readfile) or nil
 local _isfile = (typeof(isfile) == "function" and isfile) or nil
+local _isfolder = (typeof(isfolder) == "function" and isfolder) or nil
 local _makefolder = (typeof(makefolder) == "function" and makefolder) or nil
-local _getcustomasset = (typeof(getcustomasset) == "function" and getcustomasset) or nil
+local _getcustomasset = (typeof(getcustomasset) == "function" and getcustomasset) or (typeof(getsynasset) == "function" and getsynasset) or nil
 local _request = (typeof(request) == "function" and request) or (typeof(http_request) == "function" and http_request) or (typeof(syn) == "table" and syn and syn.request) or nil
 
 -- Ensure cache directory exists
-if _makefolder and not _isfile("XINZ_Cache") then
-	pcall(function() _makefolder("XINZ_Cache") end)
-end
-
-local function CacheImage(url)
-	if not _writefile or not _getcustomasset or typeof(url) ~= "string" then return url end
-	
-	-- Convert rbxassetid to downloadable URL
-	local downloadUrl = url
-	if url:match("^rbxassetid://") then
-		local id = url:match("%d+")
-		if id then
-			downloadUrl = "https://assetdelivery.roblox.com/v1/asset/?id=" .. id
-		end
-	end
-	
-	-- Extract an ID or hash from the original URL to use as filename
-	local fileId = url:match("%d+") or tostring(url):gsub("[^%w]", ""):sub(-15)
-	local fileName = "XINZ_Cache/" .. fileId .. ".png"
-	
-	if _isfile and _isfile(fileName) then
-		return _getcustomasset(fileName)
-	end
-	
-	-- Download and save
+if _makefolder then
 	pcall(function()
-		local imgData = ""
-		if _request and downloadUrl:match("^https?://") then
-			local res = _request({Url = downloadUrl, Method = "GET"})
-			if res and res.StatusCode == 200 then imgData = res.Body end
-		else
-			imgData = game:HttpGet(downloadUrl)
-		end
-		
-		if imgData and #imgData > 0 then
-			_writefile(fileName, imgData)
+		if not (_isfolder and _isfolder("XINZ_Cache")) and not (_isfile and _isfile("XINZ_Cache")) then
+			_makefolder("XINZ_Cache")
 		end
 	end)
-	
-	if _isfile and _isfile(fileName) then
-		return _getcustomasset(fileName)
+end
+
+-- Ultra-Fast CacheImage: Never freezes thread or runs slow sync HttpGet on native Roblox assets
+local function CacheImage(url)
+	if typeof(url) ~= "string" or url == "" then return url or "" end
+
+	-- Native Roblox assets return directly (0ms, zero network lag)
+	if url:match("^rbxassetid://") or url:match("^rbxthumb://") or url:match("^rbxasset://") or url:match("^http://www.roblox.com/asset/%?id=") then
+		return url
 	end
+
+	-- Pure numeric IDs return as rbxassetid
+	if tonumber(url) then
+		return "rbxassetid://" .. url
+	end
+
+	-- Web URLs (http:// or https://)
+	if url:match("^https?://") then
+		if not _writefile or not _getcustomasset then return url end
+
+		local fileId = url:match("%d+") or tostring(url):gsub("[^%w]", ""):sub(-20)
+		local fileName = "XINZ_Cache/" .. fileId .. ".png"
+
+		if _isfile and _isfile(fileName) then
+			local customOk, customAsset = pcall(function() return _getcustomasset(fileName) end)
+			if customOk and customAsset then
+				return customAsset
+			end
+		end
+
+		-- Background download so UI never hangs
+		task.spawn(function()
+			local ok, imgData = pcall(function()
+				if _request then
+					local res = _request({Url = url, Method = "GET"})
+					if res and res.StatusCode == 200 then return res.Body end
+				end
+				return game:HttpGet(url)
+			end)
+			if ok and imgData and #imgData > 0 then
+				pcall(function() _writefile(fileName, imgData) end)
+			end
+		end)
+
+		return url
+	end
+
 	return url
 end
 
@@ -790,34 +798,151 @@ do
 		end
 	end
 
-	local IconList = loadstring(game:HttpGet('https://raw.githubusercontent.com/Dummyrme/Library/refs/heads/main/Icon.lua'))()
-	function gl(i)
-		local iconData = IconList.Icons[i]
-		if iconData then
-			local spriteSheet = IconList.Spritesheets[tostring(iconData.Image)]
-			if spriteSheet then
-				return {
-					Image = spriteSheet,
-					ImageRectSize = iconData.ImageRectSize,
-					ImageRectPosition = iconData.ImageRectPosition,
-				}
+		-- High-Performance Lucide & FontAwesome Icon Engine (Compkiller 2.6 / Singularity)
+	local IconEngine
+	local env = (getgenv and getgenv()) or _G
+
+	if env.XINZ_IconEngine and type(env.XINZ_IconEngine) == "table" and env.XINZ_IconEngine.GetIcon then
+		IconEngine = env.XINZ_IconEngine
+	else
+		local okEngine, resEngine = pcall(function()
+			-- 1. Try local files first (instant 0ms, offline support)
+			if _isfile and _readfile then
+				if _isfile("lucide.lua") then
+					return loadstring(_readfile("lucide.lua"))()
+				elseif _isfile("icon.lua") then
+					return loadstring(_readfile("icon.lua"))()
+				elseif _isfile("XINZ_Cache/icon.lua") then
+					return loadstring(_readfile("XINZ_Cache/icon.lua"))()
+				elseif _isfile("XINZ_Cache/lucide.lua") then
+					return loadstring(_readfile("XINZ_Cache/lucide.lua"))()
+				end
 			end
-		end
-		if type(i) == 'string' and not i:find('rbxassetid://') then
-			return {
-				Image = "rbxassetid://".. i,
-				ImageRectSize = Vector2.new(0, 0),
-				ImageRectPosition = Vector2.new(0, 0),
+
+			-- 2. Try loading directly from your GitHub repositories (with disk caching)
+			local urls = {
+				"https://raw.githubusercontent.com/projectsingularityv1-debug/Scripts.xinz/refs/heads/main/icon.lua",
+				"https://raw.githubusercontent.com/projectsingularityv1-debug/Scripts.xinz/refs/heads/main/lucide.lua"
 			}
-		elseif type(i) == 'number' then
-			return {
-				Image = "rbxassetid://".. i,
-				ImageRectSize = Vector2.new(0, 0),
-				ImageRectPosition = Vector2.new(0, 0),
-			}
+
+			for _, url in ipairs(urls) do
+				local okHttp, resHttp = pcall(function()
+					if _request then
+						local res = _request({Url = url, Method = "GET"})
+						if res and res.StatusCode == 200 then return res.Body end
+					end
+					return game:HttpGet(url)
+				end)
+
+				if okHttp and resHttp and #resHttp > 0 then
+					local fn = loadstring(resHttp)
+					if fn then
+						local mod = fn()
+						if type(mod) == "table" and mod.GetIcon then
+							if _writefile then
+								pcall(function() _writefile("XINZ_Cache/icon.lua", resHttp) end)
+							end
+							return mod
+						end
+					end
+				end
+			end
+
+			return nil
+		end)
+
+		if okEngine and type(resEngine) == "table" and resEngine.GetIcon then
+			IconEngine = resEngine
+			env.XINZ_IconEngine = IconEngine
 		else
-			return i
+			-- Embedded fallback icon resolver (100% resilient, never crashes)
+			local FallbackIcons = {
+				["mouse-pointer"] = "rbxassetid://10734898476",
+				["star"] = "rbxassetid://10734966248",
+				["award"] = "rbxassetid://10709769406",
+				["home"] = "rbxassetid://10723407389",
+				["settings"] = "rbxassetid://10734950309",
+				["user"] = "rbxassetid://10747373176",
+				["check"] = "rbxassetid://10709790644",
+				["close"] = "rbxassetid://10747384394",
+				["x"] = "rbxassetid://10747384394",
+				["lock"] = "rbxassetid://10723434711",
+				["unlock"] = "rbxassetid://10747366027",
+				["sliders"] = "rbxassetid://10734963400",
+				["bell"] = "rbxassetid://10709775704",
+				["search"] = "rbxassetid://10734943674",
+				["folder"] = "rbxassetid://10723387563",
+				["file"] = "rbxassetid://10723374641",
+				["code"] = "rbxassetid://10709810463",
+				["terminal"] = "rbxassetid://10734982144",
+				["download"] = "rbxassetid://10723344270",
+				["upload"] = "rbxassetid://10747366434",
+				["refresh-cw"] = "rbxassetid://10734933222",
+				["eye"] = "rbxassetid://10723346959",
+				["eye-off"] = "rbxassetid://10723346871",
+				["trash"] = "rbxassetid://10747362393",
+				["copy"] = "rbxassetid://10709812159",
+				["shield"] = "rbxassetid://10734951847",
+				["zap"] = "rbxassetid://89858717966393",
+				["layers"] = "rbxassetid://10723424505",
+				["layout"] = "rbxassetid://10723425376"
+			}
+			IconEngine = {
+				GetIcon = function(self, name, font_aws)
+					if not name or name == "" then return "" end
+					local strName = tostring(name)
+					if strName:find("^rbxassetid://") or strName:find("^rbxasset://") or strName:find("^rbxthumb://") or strName:find("^https?://") then
+						return strName
+					end
+					if tonumber(strName) then
+						return "rbxassetid://" .. strName
+					end
+					local lower = string.lower(strName):gsub("^lucide%-", "")
+					return FallbackIcons[lower] or FallbackIcons[strName] or ("rbxassetid://" .. strName)
+				end
+			}
+			env.XINZ_IconEngine = IconEngine
 		end
+	end
+
+	function gl(i)
+		if not i or i == "" then
+			return {
+				Image = "",
+				ImageRectSize = Vector2.new(0, 0),
+				ImageRectPosition = Vector2.new(0, 0),
+			}
+		end
+
+		if type(i) == "table" and i.Image then
+			return {
+				Image = i.Image,
+				ImageRectSize = i.ImageRectSize or Vector2.new(0, 0),
+				ImageRectPosition = i.ImageRectPosition or i.ImageRectOffset or Vector2.new(0, 0),
+			}
+		end
+
+		local resolved = (IconEngine and IconEngine.GetIcon and IconEngine:GetIcon(i)) or (IconEngine and IconEngine.Icons and IconEngine.Icons[i] and IconEngine.Icons[i].Image) or i
+		if type(resolved) == "table" and resolved.Image then
+			return {
+				Image = resolved.Image,
+				ImageRectSize = resolved.ImageRectSize or Vector2.new(0, 0),
+				ImageRectPosition = resolved.ImageRectPosition or resolved.ImageRectOffset or Vector2.new(0, 0),
+			}
+		end
+
+		local str = tostring(resolved or "")
+		if tonumber(str) then
+			str = "rbxassetid://" .. str
+		elseif str ~= "" and not str:find("^rbxassetid://") and not str:find("^rbxasset://") and not str:find("^rbxthumb://") and not str:find("^https?://") then
+			str = "rbxassetid://" .. str
+		end
+
+		return {
+			Image = str,
+			ImageRectSize = Vector2.new(0, 0),
+			ImageRectPosition = Vector2.new(0, 0),
+		}
 	end
 	function tw(info)
 		return Tw:Create(info.v,TweenInfo.new(info.t, info.s, Enum.EasingDirection[info.d]),info.g)
@@ -2138,11 +2263,11 @@ function Library:Window(p)
 		Profile_Avatar.Image = CacheImage("rbxassetid://10901594247") -- Default user icon
 		Profile_Avatar.ScaleType = Enum.ScaleType.Crop
 		
-		-- Avatar Loading: ลองดึงรูปด้วยวิธีต่างๆ ตามความสามารถของ executor
+		-- Avatar Loading: เธฅเธญเธเธ”เธถเธเธฃเธนเธเธ”เนเธงเธขเธงเธดเธเธตเธ•เนเธฒเธเน เธ•เธฒเธกเธเธงเธฒเธกเธชเธฒเธกเธฒเธฃเธ–เธเธญเธ executor
 		local avatarUrl = ProfileData.AvatarUrl
 		if avatarUrl and avatarUrl ~= "" then
 			task.spawn(function()
-				-- วิธีที่ 1: ถ้าเป็นลิงก์ Roblox thumbnail API ดึง userId และใช้ GetUserThumbnailAsync
+				-- เธงเธดเธเธตเธ—เธตเน 1: เธ–เนเธฒเน€เธเนเธเธฅเธดเธเธเน Roblox thumbnail API เธ”เธถเธ userId เนเธฅเธฐเนเธเน GetUserThumbnailAsync
 				local uid = avatarUrl:match("userIds=(%d+)")
 				if uid then
 					local s, imgUrl = pcall(function()
@@ -2158,7 +2283,7 @@ function Library:Window(p)
 					end
 				end
 				
-				-- วิธีที่ 2: ใช้ CacheImage ที่ทำไว้ด้านบน (Dex-style)
+				-- เธงเธดเธเธตเธ—เธตเน 2: เนเธเน CacheImage เธ—เธตเนเธ—เธณเนเธงเนเธ”เนเธฒเธเธเธ (Dex-style)
 				if avatarUrl:match("^https?://") then
 					pcall(function()
 						Profile_Avatar.Image = CacheImage(avatarUrl)
@@ -3842,7 +3967,7 @@ function Library:Window(p)
 			ToggleValue_1.BorderColor3 = Color3.fromRGB(0,0,0)
 			ToggleValue_1.BorderSizePixel = 0
 			ToggleValue_1.LayoutOrder = 1
-			ToggleValue_1.Size = UDim2.new(0, 0, 0, 0)   -- ซ่อน: ไม่ใช้พื้นที่ใน layout
+			ToggleValue_1.Size = UDim2.new(0, 0, 0, 0)   -- เธเนเธญเธ: เนเธกเนเนเธเนเธเธทเนเธเธ—เธตเนเนเธ layout
 			ToggleValue_1.Visible = false
 
 			UICorner_1.Parent = ToggleValue_1
@@ -3955,7 +4080,7 @@ function Library:Window(p)
 						Key = input.KeyCode
 						TextLabel_1.Text = tostring(Key):gsub("Enum.KeyCode.", "")
 						adjustBoxBindSize()
-						-- เปลี่ยนแค่ key แสดง ไม่ trigger callback
+						-- เน€เธเธฅเธตเนเธขเธเนเธเน key เนเธชเธ”เธ เนเธกเน trigger callback
 						KeyChangedCallback(Key)
 						inputConnection:Disconnect()
 						task.wait(.1)
@@ -3972,7 +4097,7 @@ function Library:Window(p)
 				end
 			end)
 
-			-- ไม่เรียก Callback ตอน init เพื่อป้องกัน toggle เปิดทันที
+			-- เนเธกเนเน€เธฃเธตเธขเธ Callback เธ•เธญเธ init เน€เธเธทเนเธญเธเนเธญเธเธเธฑเธ toggle เน€เธเธดเธ”เธ—เธฑเธเธ—เธต
 			-- delay(0, function()
 			-- 	pcall(Callback, Key, Value)
 			-- end)
@@ -4012,7 +4137,7 @@ function Library:Window(p)
 				Key = t
 				TextLabel_1.Text = tostring(Key):gsub("Enum.KeyCode.", "")
 				adjustBoxBindSize()
-				-- ไม่เรียก callback ตอน SetKey
+				-- เนเธกเนเน€เธฃเธตเธขเธ callback เธ•เธญเธ SetKey
 			end
 
 			return New
@@ -4067,7 +4192,7 @@ function Library:Window(p)
 			TopLabel.Size = UDim2.new(1, -60, 1, 0)
 			TopLabel.Position = UDim2.new(0, 8, 0, 0)
 			TopLabel.Font = Enum.Font.GothamBold
-			TopLabel.Text = "📋 " .. Title
+			TopLabel.Text = "๐“ " .. Title
 			TopLabel.TextColor3 = Color3.fromRGB(160, 160, 200)
 			TopLabel.TextSize = 10
 			TopLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -4133,11 +4258,11 @@ function Library:Window(p)
 				system  = Color3.fromRGB(180, 140, 255),
 			}
 			local levelIcons = {
-				info    = "ℹ",
-				success = "✓",
-				warn    = "⚠",
-				error   = "✗",
-				system  = "◈",
+				info    = "โน",
+				success = "โ“",
+				warn    = "โ ",
+				error   = "โ—",
+				system  = "โ—",
 			}
 
 			local logCount = 0
@@ -4155,7 +4280,7 @@ function Library:Window(p)
 				end
 
 				local timeStr = os.date and os.date("%H:%M:%S") or ""
-				local icon = levelIcons[level] or "·"
+				local icon = levelIcons[level] or "ยท"
 				local color = levelColors[level] or Color3.fromRGB(200, 200, 200)
 
 				-- Card Container
@@ -4168,7 +4293,7 @@ function Library:Window(p)
 
 				RowFrame.Parent = LogFrame
 				RowFrame.BackgroundColor3 = Color3.fromRGB(26, 26, 34)
-				RowFrame.BackgroundTransparency = 1 -- เริ่มต้นที่ใสสำหรับ animation
+				RowFrame.BackgroundTransparency = 1 -- เน€เธฃเธดเนเธกเธ•เนเธเธ—เธตเนเนเธชเธชเธณเธซเธฃเธฑเธ animation
 				RowFrame.BorderSizePixel = 0
 				RowFrame.Size = UDim2.new(1, 0, 0, 0)
 				RowFrame.AutomaticSize = Enum.AutomaticSize.Y
@@ -5216,7 +5341,7 @@ function Library:Window(p)
 			ImageLogo.ScaleType = Enum.ScaleType.Crop
 			
 			UICorner_1.Parent = ImageLogo
-			UICorner_1.CornerRadius = UDim.new(0, 8) -- ขอบมน 8
+			UICorner_1.CornerRadius = UDim.new(0, 8) -- เธเธญเธเธกเธ 8
 
 			-- Overlay for crossfade
 			SecondImage.Name = "ImOverlay"
@@ -5684,7 +5809,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 	end
 
 	do
-		local ReopenBreadcrumb, ReopenBreadcrumbEnabled -- ให้ปุ่ม breadcrumb (CloseUIButton) ผูกสถานะเปิด/ปิดได้
+		local ReopenBreadcrumb, ReopenBreadcrumbEnabled -- เนเธซเนเธเธธเนเธก breadcrumb (CloseUIButton) เธเธนเธเธชเธ–เธฒเธเธฐเน€เธเธดเธ”/เธเธดเธ”เนเธ”เน
 		local Size_1 = Instance.new("TextButton")
 
 		Size_1.Name = "Size"
@@ -6059,7 +6184,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			CloseUIShadow.ImageTransparency = 0.5
 			CloseUIShadow.ScaleType = Enum.ScaleType.Slice
 			CloseUIShadow.SliceCenter = Rect.new(10, 10, 118, 118)
-			CloseUIShadow.Visible = false -- โชว์เฉพาะตอน UI ถูกซ่อน ควบคุมโดย closeui()
+			CloseUIShadow.Visible = false -- เนเธเธงเนเน€เธเธเธฒเธฐเธ•เธญเธ UI เธ–เธนเธเธเนเธญเธ เธเธงเธเธเธธเธกเนเธ”เธข closeui()
 			
 			local CloseUIScale = Instance.new("UIScale")
 			CloseUIScale.Parent = CloseUIShadow
@@ -6398,11 +6523,11 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 			Icon = "house"
 		})
 
-		-- Image Carousel (คุณสามารถนำ ID รูปภาพมาเปลี่ยนตรงนี้ได้เลย)
+		-- Image Carousel (เธเธธเธ“เธชเธฒเธกเธฒเธฃเธ–เธเธณ ID เธฃเธนเธเธ เธฒเธเธกเธฒเน€เธเธฅเธตเนเธขเธเธ•เธฃเธเธเธตเนเนเธ”เนเน€เธฅเธข)
 		local CarouselImages = {
-			CacheImage("rbxassetid://92567372646337"), -- รูปที่ 1
-			CacheImage("rbxassetid://92567372646337"), -- รูปที่ 2 
-			CacheImage("rbxassetid://92567372646337"), -- รูปที่ 3
+			CacheImage("rbxassetid://92567372646337"), -- เธฃเธนเธเธ—เธตเน 1
+			CacheImage("rbxassetid://92567372646337"), -- เธฃเธนเธเธ—เธตเน 2 
+			CacheImage("rbxassetid://92567372646337"), -- เธฃเธนเธเธ—เธตเน 3
 		}
 		
 		local HomeCarousel = HomeTab:Image()
@@ -6410,13 +6535,13 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 		
 		task.spawn(function()
 			local idx = 1
-			while task.wait(5) do -- สลับรูปทุกๆ 5 วินาที
+			while task.wait(5) do -- เธชเธฅเธฑเธเธฃเธนเธเธ—เธธเธเน 5 เธงเธดเธเธฒเธ—เธต
 				if not HomeCarousel then break end
 				idx = idx + 1
 				if idx > #CarouselImages then idx = 1 end
 				
 				local s = pcall(function()
-					HomeCarousel:SetImage(CarouselImages[idx], true) -- true = ให้มีเอฟเฟกต์ Fade (เลือน)
+					HomeCarousel:SetImage(CarouselImages[idx], true) -- true = เนเธซเนเธกเธตเน€เธญเธเน€เธเธเธ•เน Fade (เน€เธฅเธทเธญเธ)
 				end)
 				if not s then break end
 			end
@@ -6536,3 +6661,5 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 end
 
 return Library
+
+
