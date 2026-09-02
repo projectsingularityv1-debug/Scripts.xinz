@@ -6376,6 +6376,7 @@ Notification.BorderColor3 = Color3.fromRGB(0,0,0)
 		})
 
 		return Tabs
+	end
 end
 
 return Library
