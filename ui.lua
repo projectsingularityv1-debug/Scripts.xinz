@@ -1,3 +1,9 @@
+-- โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•
+--  Anti-Detection Bypass Layer (Dex-style)
+--  Randomized names, cloneref services, gethui/protectgui hiding
+-- โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•โ•
+
+
 local _cloneref = (typeof(cloneref) == "function" and cloneref) or function(...) return ... end
 local _gethui = (typeof(gethui) == "function" and gethui) or (typeof(get_hidden_gui) == "function" and get_hidden_gui) or nil
 local _protectgui = (typeof(protect_gui) == "function" and protect_gui) or (typeof(syn) == "table" and syn and syn.protect_gui) or nil
@@ -1789,14 +1795,18 @@ function Library:Window(p)
 	local Size = p.Config.Size or UDim2.new(0, 530,0, 400)
 	local TabWidth = p.TabWidth or 150
 	local ProfileData = p.Profile
+	local lp = _Services.Players.LocalPlayer
 	if not ProfileData then
-		local lp = _Services.Players.LocalPlayer
 		if lp then
 			ProfileData = {
 				Username = lp.Name == "monota1412" and "[Dev] " .. lp.Name or lp.Name,
 				Email = "UID: " .. tostring(lp.UserId),
-				AvatarUrl = "userIds=" .. tostring(lp.UserId)
+				AvatarUrl = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(lp.UserId) .. "&w=150&h=150"
 			}
+		end
+	elseif ProfileData and (not ProfileData.AvatarUrl or ProfileData.AvatarUrl == "") then
+		if lp and lp.UserId then
+			ProfileData.AvatarUrl = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(lp.UserId) .. "&w=150&h=150"
 		end
 	end
 
@@ -2253,37 +2263,74 @@ function Library:Window(p)
 		Profile_Avatar.Position = UDim2.new(0, 5, 0.5, 0)
 		Profile_Avatar.Size = UDim2.new(0, 35, 0, 35)
 		Profile_Avatar.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-		Profile_Avatar.Image = CacheImage("rbxassetid://10901594247") -- Default user icon
+		Profile_Avatar.BackgroundTransparency = 1
 		Profile_Avatar.ScaleType = Enum.ScaleType.Crop
+		Profile_Avatar.BorderSizePixel = 0
 		
-		-- Avatar Loading: เธฅเธญเธเธ”เธถเธเธฃเธนเธเธ”เนเธงเธขเธงเธดเธเธตเธ•เนเธฒเธเน เธ•เธฒเธกเธเธงเธฒเธกเธชเธฒเธกเธฒเธฃเธ–เธเธญเธ executor
-		local avatarUrl = ProfileData.AvatarUrl
-		if avatarUrl and avatarUrl ~= "" then
-			task.spawn(function()
-				-- เธงเธดเธเธตเธ—เธตเน 1: เธ–เนเธฒเน€เธเนเธเธฅเธดเธเธเน Roblox thumbnail API เธ”เธถเธ userId เนเธฅเธฐเนเธเน GetUserThumbnailAsync
-				local uid = avatarUrl:match("userIds=(%d+)")
-				if uid then
+		-- Universal High-Reliability Avatar Engine
+		local function applyAvatar(src)
+			if not src or src == "" then return end
+			local str = tostring(src)
+
+			-- 1. rbxthumb format (Roblox Native Headshot)
+			if str:match("^rbxthumb://") then
+				Profile_Avatar.Image = str
+				return
+			end
+
+			-- 2. rbxassetid / rbxasset
+			if str:match("^rbxassetid://") or str:match("^rbxasset://") then
+				Profile_Avatar.Image = str
+				return
+			end
+
+			-- 3. Pure number (User ID or Asset ID)
+			local num = tonumber(str)
+			if num then
+				Profile_Avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(num) .. "&w=150&h=150"
+				return
+			end
+
+			-- 4. Contains userIds= or id= (Roblox API parameter format)
+			local uid = str:match("userIds=(%d+)") or str:match("[?&]id=(%d+)") or str:match("users/(%d+)")
+			if uid then
+				Profile_Avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(uid) .. "&w=150&h=150"
+				task.spawn(function()
 					local s, imgUrl = pcall(function()
 						return _Services.Players:GetUserThumbnailAsync(
 							tonumber(uid),
 							Enum.ThumbnailType.HeadShot,
-							Enum.ThumbnailSize.Size100x100
+							Enum.ThumbnailSize.Size150x150
 						)
 					end)
-					if s and imgUrl then
-						Profile_Avatar.Image = CacheImage(imgUrl)
-						return
+					if s and imgUrl and imgUrl ~= "" then
+						Profile_Avatar.Image = imgUrl
 					end
-				end
-				
-				-- เธงเธดเธเธตเธ—เธตเน 2: เนเธเน CacheImage เธ—เธตเนเธ—เธณเนเธงเนเธ”เนเธฒเธเธเธ (Dex-style)
-				if avatarUrl:match("^https?://") then
-					pcall(function()
-						Profile_Avatar.Image = CacheImage(avatarUrl)
-					end)
-				end
-			end)
+				end)
+				return
+			end
+
+			-- 5. External Web URL (http/https Discord/Imgur/CDN)
+			if str:match("^https?://") then
+				Profile_Avatar.Image = CacheImage(str)
+				return
+			end
+
+			Profile_Avatar.Image = str
 		end
+
+		local avatarTarget = (ProfileData and ProfileData.AvatarUrl)
+		if not avatarTarget or avatarTarget == "" then
+			avatarTarget = (getgenv and (getgenv().KeyAvatarAsset or getgenv().KeyAvatar))
+		end
+		if not avatarTarget or avatarTarget == "" then
+			local lp = _Services.Players.LocalPlayer
+			if lp and lp.UserId then
+				avatarTarget = "rbxthumb://type=AvatarHeadShot&id=" .. tostring(lp.UserId) .. "&w=150&h=150"
+			end
+		end
+
+		applyAvatar(avatarTarget)
 		
 		local Avatar_Corner = Instance.new("UICorner", Profile_Avatar)
 		Avatar_Corner.CornerRadius = UDim.new(1, 0)
